@@ -1,0 +1,11 @@
+transaction_id,date,entity_type,entity_name,transaction_type,category,description,amount,currency,source_account,destination_account,counter_entity_name
+tx-001,2026-01-05,PJ,Empresa X,income,vendas,Recebimento cliente A,15000.00,BRL,Conta Empresarial,Conta Empresarial,
+tx-002,2026-01-10,PJ,Empresa X,pro_labore,remuneracao,Pro-labore Janeiro,4000.00,BRL,Conta Empresarial,Conta Pessoal,Gustavo
+tx-003,2026-01-15,PJ,Empresa X,expense,fornecedores,Pagamento fornecedor,2500.00,BRL,Conta Empresarial,Conta Empresarial,
+tx-004,2026-01-20,PJ,Empresa X,dividend_distribution,dividendos,Distribuicao dividendos Jan,3000.00,BRL,Conta Empresarial,Conta Pessoal,Gustavo
+tx-005,2026-01-25,PF,Gustavo,investment_pf_to_pj,aporte,Aporte de capital,5000.00,BRL,Conta Pessoal,Conta Empresarial,Empresa X
+tx-006,2026-02-05,PJ,Empresa X,income,vendas,Recebimento cliente B,18000.00,BRL,Conta Empresarial,Conta Empresarial,
+tx-007,2026-02-10,PJ,Empresa X,pro_labore,remuneracao,Pro-labore Fevereiro,4000.00,BRL,Conta Empresarial,Conta Pessoal,Gustavo
+tx-008,2026-02-14,PJ,Empresa X,expense,servicos,Assinatura software,800.00,BRL,Conta Empresarial,Conta Empresarial,
+tx-009,2026-02-20,PJ,Empresa X,dividend_distribution,dividendos,Distribuicao dividendos Fev,4500.00,BRL,Conta Empresarial,Conta Pessoal,Gustavo
+tx-010,2026-02-25,PF,Gustavo,loan_pf_to_pj,emprestimo,Emprestimo para capital de giro,8000.00,BRL,Conta Pessoal,Conta Empresarial,Empresa X

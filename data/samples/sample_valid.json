@@ -1,0 +1,15 @@
+[
+  {
+    "transaction_id": "tx-003",
+    "date": "2026-01-12",
+    "entity_type": "PF",
+    "entity_name": "Gustavo",
+    "transaction_type": "investment_pf_to_pj",
+    "category": "aporte",
+    "description": "Aporte do socio",
+    "amount": 2500.0,
+    "currency": "BRL",
+    "source_account": "Conta Pessoal",
+    "destination_account": "Conta Empresa"
+  }
+]

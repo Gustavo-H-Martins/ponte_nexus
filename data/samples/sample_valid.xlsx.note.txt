@@ -1,0 +1,2 @@
+Arquivo placeholder para sample_valid.xlsx.
+Crie um .xlsx real a partir de data/samples/sample_valid.csv quando precisar testar leitura Excel.

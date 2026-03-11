@@ -1,0 +1,2 @@
+"""Namespace local do projeto."""
+
