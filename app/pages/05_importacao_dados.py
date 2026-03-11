@@ -8,33 +8,36 @@ import pandas as pd
 import streamlit as st
 
 from src.services.ingestion_service import create_ingestion_service
+from app.ui import page_header
 
-st.title("Importacao de Dados")
+st.set_page_config(page_title="Importação · Ponte Nexus", layout="wide", page_icon="💠")
+
+page_header("Importação de Dados", "Envie um arquivo CSV, XLSX ou JSON com seus lançamentos")
 
 st.markdown(
     """
-Formatos aceitos: **CSV**, **XLSX**, **JSON**
+**Colunas obrigatórias** — o arquivo deve conter exatamente estes nomes de cabeçalho:
 
-**Colunas obrigatorias:**
-
-| Coluna | Formato | Descricao |
+| Coluna | Formato | Descrição |
 |---|---|---|
-| transaction_id | texto | Identificador unico |
-| date | YYYY-MM-DD | Data da transacao |
-| entity_type | PF ou PJ | Tipo da entidade |
-| entity_name | texto | Nome da entidade |
-| transaction_type | texto | Tipo do fluxo |
-| category | texto | Categoria |
-| description | texto | Descricao |
-| amount | decimal > 0 | Valor |
-| currency | 3 letras | Moeda (ex: BRL) |
-| source_account | texto | Conta de origem |
-| destination_account | texto | Conta de destino |
+| `id_lancamento` | texto | Identificador único do lançamento |
+| `data` | YYYY-MM-DD | Data da transação |
+| `tipo_entidade` | `PF` ou `PJ` | Tipo da entidade principal |
+| `nome_entidade` | texto | Nome da entidade principal |
+| `tipo_transacao` | ver abaixo | Tipo do fluxo financeiro |
+| `categoria` | texto | Categoria do lançamento |
+| `descricao` | texto | Descrição livre |
+| `valor` | decimal > 0 | Valor da transação |
+| `moeda` | 3 letras | Código da moeda (ex: `BRL`) |
+| `conta_origem` | texto | Conta de origem |
+| `conta_destino` | texto | Conta de destino |
 
-Coluna opcional: `counter_entity_name` (contraparte em fluxos cruzados PF<->PJ).
+Coluna opcional: `nome_contraparte` — entidade de contraparte em fluxos cruzados PF↔PJ.
 
-**Tipos validos:** `income`, `expense`, `transfer_pf_to_pj`, `transfer_pj_to_pf`,
-`investment_pf_to_pj`, `loan_pf_to_pj`, `dividend_distribution`, `pro_labore`
+**Valores válidos para `tipo_transacao`:**
+
+`receita` · `despesa` · `transferencia_pf_pj` · `transferencia_pj_pf` ·
+`aporte_pf_pj` · `emprestimo_pf_pj` · `dividendos` · `pro_labore`
 """
 )
 
@@ -51,7 +54,7 @@ file_bytes = uploaded_file.getvalue()
 ext = uploaded_file.name.rsplit(".", 1)[-1].lower()
 
 # Preview
-st.subheader("Preview")
+st.markdown('<span class="nx-section-label">Pré-visualização</span>', unsafe_allow_html=True)
 try:
     if ext == "csv":
         preview_df = pd.read_csv(io.StringIO(file_bytes.decode("utf-8")))
@@ -59,10 +62,10 @@ try:
         preview_df = pd.read_excel(io.BytesIO(file_bytes))
     else:
         preview_df = pd.read_json(io.StringIO(file_bytes.decode("utf-8")))
-    st.dataframe(preview_df.head(10), use_container_width=True)
-    st.caption(f"{len(preview_df)} linhas detectadas.")
+    st.dataframe(preview_df.head(10), use_container_width=True, hide_index=True)
+    st.caption(f"{len(preview_df)} linha(s) detectada(s).")
 except Exception as exc:
-    st.error(f"Nao foi possivel ler o arquivo: {exc}")
+    st.error(f"Não foi possível ler o arquivo: {exc}")
     st.stop()
 
 # Importar
@@ -73,7 +76,7 @@ if st.button("Importar", type="primary"):
 
     if result["status"] == "failed":
         st.error(
-            f"Importacao falhou — {result['records_total']} registros analisados, "
+            f"Importação falhou — {result['records_total']} registros analisados, "
             f"{len(result['errors'])} erro(s) encontrado(s)."
         )
         for err in result["errors"][:20]:
@@ -83,10 +86,10 @@ if st.button("Importar", type="primary"):
                 f"{err.get('error_message', '')}"
             )
         if len(result["errors"]) > 20:
-            st.caption(f"... e mais {len(result['errors']) - 20} erros nao exibidos.")
+            st.caption(f"… e mais {len(result['errors']) - 20} erros não exibidos.")
     else:
         st.success(
-            f"Concluido: {result['records_inserted']} registros inseridos, "
-            f"{result['records_skipped']} ignorados (ja existiam)."
+            f"Concluído: {result['records_inserted']} registro(s) inserido(s), "
+            f"{result['records_skipped']} ignorado(s) (já existiam)."
         )
         st.cache_data.clear()

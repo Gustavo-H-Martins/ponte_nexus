@@ -16,8 +16,8 @@ from src.repositories.transaction_repository import TransactionRepository
 
 logger = logging.getLogger(__name__)
 
-_PF_TO_PJ = {"transfer_pf_to_pj", "investment_pf_to_pj", "loan_pf_to_pj"}
-_PJ_TO_PF = {"transfer_pj_to_pf", "dividend_distribution", "pro_labore"}
+_PF_TO_PJ = {"transferencia_pf_pj", "aporte_pf_pj", "emprestimo_pf_pj"}
+_PJ_TO_PF = {"transferencia_pj_pf", "dividendos", "pro_labore"}
 
 
 class IngestionService:
@@ -65,16 +65,16 @@ class IngestionService:
         skipped = 0
 
         for row in df.to_dict(orient="records"):
-            external_id = str(row["transaction_id"])
+            external_id = str(row["id_lancamento"])
 
             if tx_repo.exists_by_external_id(external_id):
                 skipped += 1
                 continue
 
-            tx_type = str(row["transaction_type"])
-            entity_type = str(row["entity_type"])
-            entity_name = str(row["entity_name"])
-            raw_counter = row.get("counter_entity_name")
+            tx_type    = str(row["tipo_transacao"])
+            entity_type = str(row["tipo_entidade"])
+            entity_name = str(row["nome_entidade"])
+            raw_counter = row.get("nome_contraparte")
             counter_name: str | None = (
                 None
                 if raw_counter is None or (
@@ -82,28 +82,28 @@ class IngestionService:
                 ) or str(raw_counter).strip() == ""
                 else str(raw_counter).strip()
             )
-            currency = str(row["currency"])
+            currency = str(row["moeda"])
 
             src_entity, dst_entity = self._resolve_entities(
                 tx_type, entity_name, entity_type, counter_name, entity_repo
             )
 
             src_account = account_repo.get_or_create(
-                str(row["source_account"]), src_entity.id, currency
+                str(row["conta_origem"]), src_entity.id, currency
             )
             dst_account = account_repo.get_or_create(
-                str(row["destination_account"]), dst_entity.id, currency
+                str(row["conta_destino"]), dst_entity.id, currency
             )
-            category = category_repo.get_or_create(str(row["category"]))
+            category = category_repo.get_or_create(str(row["categoria"]))
 
-            tx_date = pd.Timestamp(row["date"]).date()
+            tx_date = pd.Timestamp(row["data"]).date()
 
             tx_model = TransactionModel(
                 external_transaction_id=external_id,
                 transaction_date=tx_date,
                 transaction_type=tx_type,
-                description=str(row.get("description", "")),
-                amount=Decimal(str(row["amount"])),
+                description=str(row.get("descricao", "")),
+                amount=Decimal(str(row["valor"])),
                 currency=currency,
                 category_id=category.id,
                 source_account_id=src_account.id,
@@ -115,7 +115,7 @@ class IngestionService:
             inserted += 1
 
         logger.info(
-            "Persistencia concluida: %d inseridos, %d ignorados (duplicata).",
+            "Persistência concluída: %d inseridos, %d ignorados (duplicata).",
             inserted,
             skipped,
         )

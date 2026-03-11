@@ -3,17 +3,17 @@ import pandas as pd
 from src.validation.validators import validate_dataframe
 
 _VALID_ROW = {
-    "transaction_id": "tx-001",
-    "date": "2026-01-05",
-    "entity_type": "PJ",
-    "entity_name": "Empresa X",
-    "transaction_type": "income",
-    "category": "vendas",
-    "description": "Recebimento",
-    "amount": "15000.00",
-    "currency": "BRL",
-    "source_account": "Conta Empresa",
-    "destination_account": "Conta Empresa",
+    "id_lancamento": "tx-001",
+    "data": "2026-01-05",
+    "tipo_entidade": "PJ",
+    "nome_entidade": "Empresa X",
+    "tipo_transacao": "receita",
+    "categoria": "vendas",
+    "descricao": "Recebimento",
+    "valor": "15000.00",
+    "moeda": "BRL",
+    "conta_origem": "Conta Empresa",
+    "conta_destino": "Conta Empresa",
 }
 
 
@@ -31,12 +31,12 @@ def test_valid_dataframe_returns_no_errors():
 
 
 def test_invalid_amount_returns_error():
-    df = pd.DataFrame([{**_VALID_ROW, "amount": "-100.00"}])
+    df = pd.DataFrame([{**_VALID_ROW, "valor": "-100.00"}])
     errors = validate_dataframe(df)
-    assert any(e.get("field_name") == "amount" for e in errors)
+    assert any(e.get("field_name") == "valor" for e in errors)
 
 
 def test_invalid_entity_type_returns_error():
-    df = pd.DataFrame([{**_VALID_ROW, "entity_type": "SA"}])
+    df = pd.DataFrame([{**_VALID_ROW, "tipo_entidade": "SA"}])
     errors = validate_dataframe(df)
     assert errors

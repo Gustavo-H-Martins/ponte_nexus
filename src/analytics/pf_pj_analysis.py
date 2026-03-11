@@ -1,8 +1,8 @@
 import pandas as pd
 
 
-PJ_TO_PF_TYPES = {"transfer_pj_to_pf", "dividend_distribution", "pro_labore"}
-PF_TO_PJ_TYPES = {"transfer_pf_to_pj", "investment_pf_to_pj", "loan_pf_to_pj"}
+PJ_TO_PF_TYPES = {"transferencia_pj_pf", "dividendos", "pro_labore"}
+PF_TO_PJ_TYPES = {"transferencia_pf_pj", "aporte_pf_pj", "emprestimo_pf_pj"}
 
 
 def summarize_pf_pj_direction(df: pd.DataFrame) -> pd.DataFrame:

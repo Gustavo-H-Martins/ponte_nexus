@@ -2,11 +2,11 @@ import pandas as pd
 
 
 FLOW_TYPES = {
-    "transfer_pf_to_pj",
-    "transfer_pj_to_pf",
-    "investment_pf_to_pj",
-    "loan_pf_to_pj",
-    "dividend_distribution",
+    "transferencia_pf_pj",
+    "transferencia_pj_pf",
+    "aporte_pf_pj",
+    "emprestimo_pf_pj",
+    "dividendos",
     "pro_labore",
 }
 

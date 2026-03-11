@@ -3,9 +3,9 @@ from src.ingestion.pipeline import IngestionPipeline
 _INVALID_CSV = "id,data,tipo,valor\n1,10-01-2026,PJ,abc\n"
 
 _VALID_CSV = (
-    "transaction_id,date,entity_type,entity_name,transaction_type,"
-    "category,description,amount,currency,source_account,destination_account\n"
-    "tx-001,2026-01-05,PJ,Empresa X,income,vendas,Recebimento,15000.00,BRL,Conta Empresa,Conta Empresa\n"
+    "id_lancamento,data,tipo_entidade,nome_entidade,tipo_transacao,"
+    "categoria,descricao,valor,moeda,conta_origem,conta_destino\n"
+    "tx-001,2026-01-05,PJ,Empresa X,receita,vendas,Recebimento,15000.00,BRL,Conta Empresa,Conta Empresa\n"
 )
 
 

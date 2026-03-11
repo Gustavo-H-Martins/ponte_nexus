@@ -8,9 +8,9 @@ def load_transactions() -> pd.DataFrame:
     query = text(
         """
         SELECT
-            id, source, occurred_on, description, category, tx_type, amount, account
+            id, nome_entidade, data, descricao, categoria, tipo_transacao, valor, conta_origem
         FROM transactions
-        ORDER BY occurred_on DESC, id DESC
+        ORDER BY data DESC, id DESC
         """
     )
     with engine.connect() as conn:
@@ -20,6 +20,6 @@ def load_transactions() -> pd.DataFrame:
 def kpis(df: pd.DataFrame) -> dict[str, float]:
     if df.empty:
         return {"incomes": 0.0, "expenses": 0.0, "net": 0.0}
-    incomes = float(df.loc[df["tx_type"] == "income", "amount"].sum())
-    expenses = float(df.loc[df["tx_type"] == "expense", "amount"].sum())
+    incomes = float(df.loc[df["tipo_transacao"] == "receita", "valor"].sum())
+    expenses = float(df.loc[df["tipo_transacao"] == "despesa", "valor"].sum())
     return {"incomes": incomes, "expenses": expenses, "net": incomes - expenses}

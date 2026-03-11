@@ -7,11 +7,11 @@ class EntityType(str, Enum):
 
 
 class TransactionType(str, Enum):
-    INCOME = "income"
-    EXPENSE = "expense"
-    TRANSFER_PF_TO_PJ = "transfer_pf_to_pj"
-    TRANSFER_PJ_TO_PF = "transfer_pj_to_pf"
-    INVESTMENT_PF_TO_PJ = "investment_pf_to_pj"
-    LOAN_PF_TO_PJ = "loan_pf_to_pj"
-    DIVIDEND_DISTRIBUTION = "dividend_distribution"
-    PRO_LABORE = "pro_labore"
+    RECEITA               = "receita"
+    DESPESA               = "despesa"
+    TRANSFERENCIA_PF_PJ   = "transferencia_pf_pj"
+    TRANSFERENCIA_PJ_PF   = "transferencia_pj_pf"
+    APORTE_PF_PJ          = "aporte_pf_pj"
+    EMPRESTIMO_PF_PJ      = "emprestimo_pf_pj"
+    DIVIDENDOS            = "dividendos"
+    PRO_LABORE            = "pro_labore"

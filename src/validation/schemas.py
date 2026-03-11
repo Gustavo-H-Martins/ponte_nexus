@@ -9,22 +9,22 @@ from src.domain.enums import EntityType, TransactionType
 
 
 class TransactionImportSchema(BaseModel):
-    transaction_id: str = Field(min_length=1)
-    date: date
-    entity_type: EntityType
-    entity_name: str = Field(min_length=1)
-    transaction_type: TransactionType
-    category: str = Field(min_length=1)
-    description: str
-    amount: Decimal = Field(gt=0)
-    currency: str = Field(min_length=3, max_length=3)
-    source_account: str = Field(min_length=1)
-    destination_account: str = Field(min_length=1)
+    id_lancamento: str = Field(min_length=1)
+    data: date
+    tipo_entidade: EntityType
+    nome_entidade: str = Field(min_length=1)
+    tipo_transacao: TransactionType
+    categoria: str = Field(min_length=1)
+    descricao: str
+    valor: Decimal = Field(gt=0)
+    moeda: str = Field(min_length=3, max_length=3)
+    conta_origem: str = Field(min_length=1)
+    conta_destino: str = Field(min_length=1)
     # Entidade de contraparte para fluxos cruzados PF<->PJ.
-    # Opcional: quando ausente em fluxos cruzados, um nome derivado e gerado.
-    counter_entity_name: str | None = None
+    # Opcional: quando ausente em fluxos cruzados, um nome derivado é gerado.
+    nome_contraparte: str | None = None
 
-    @field_validator("counter_entity_name", mode="before")
+    @field_validator("nome_contraparte", mode="before")
     @classmethod
     def _coerce_nan_to_none(cls, v: Any) -> str | None:
         if v is None:

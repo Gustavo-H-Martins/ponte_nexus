@@ -15,13 +15,13 @@ def import_transactions(csv_path: Path) -> int:
         session.add_all(
             [
                 Transaction(
-                    source=r.source,
-                    occurred_on=r.occurred_on,
-                    description=r.description,
-                    category=r.category,
-                    tx_type=r.tx_type,
-                    amount=Decimal(r.amount),
-                    account=r.account,
+                    nome_entidade=r.nome_entidade,
+                    data=r.data,
+                    descricao=r.descricao,
+                    categoria=r.categoria,
+                    tipo_transacao=r.tipo_transacao,
+                    valor=Decimal(r.valor),
+                    conta_origem=r.conta_origem,
                 )
                 for r in records
             ]

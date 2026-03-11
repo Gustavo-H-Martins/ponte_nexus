@@ -14,4 +14,4 @@ if uploaded is not None:
     imported = import_transactions(target)
     st.success(f"{imported} transacoes importadas com sucesso.")
 
-st.caption("Colunas esperadas: source, occurred_on, description, category, tx_type, amount, account")
+st.caption("Colunas esperadas: nome_entidade, data, descricao, categoria, tipo_transacao, valor, conta_origem")

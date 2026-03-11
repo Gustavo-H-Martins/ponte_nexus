@@ -3,13 +3,13 @@ from pathlib import Path
 import pandas as pd
 
 EXPECTED_COLUMNS = [
-    "source",
-    "occurred_on",
-    "description",
-    "category",
-    "tx_type",
-    "amount",
-    "account",
+    "nome_entidade",
+    "data",
+    "descricao",
+    "categoria",
+    "tipo_transacao",
+    "valor",
+    "conta_origem",
 ]
 
 
