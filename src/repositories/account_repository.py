@@ -24,3 +24,21 @@ class AccountRepository(BaseRepository):
         self.session.add(account)
         self.session.flush()
         return account
+
+    def list_all(self) -> list[AccountModel]:
+        stmt = select(AccountModel).order_by(AccountModel.account_name)
+        return list(self.session.scalars(stmt))
+
+    def list_by_entity(self, entity_id: int) -> list[AccountModel]:
+        stmt = (
+            select(AccountModel)
+            .where(AccountModel.entity_id == entity_id)
+            .order_by(AccountModel.account_name)
+        )
+        return list(self.session.scalars(stmt))
+
+    def delete_by_id(self, account_id: int) -> None:
+        account = self.session.get(AccountModel, account_id)
+        if account:
+            self.session.delete(account)
+            self.session.flush()

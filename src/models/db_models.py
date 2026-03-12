@@ -59,3 +59,14 @@ class PfPjRelationshipModel(Base):
     pf_entity_id: Mapped[int] = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False)
     pj_entity_id: Mapped[int] = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False)
     created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
+
+
+class CompanyModel(Base):
+    """Dados adicionais de pessoa jurídica vinculada a uma entidade PJ."""
+
+    __tablename__ = "empresas"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    entity_id: Mapped[int] = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False, unique=True)
+    cnpj: Mapped[str] = mapped_column(String(18), nullable=False, unique=True)
+    company_type: Mapped[str] = mapped_column(String(64), nullable=False, default="ltda")

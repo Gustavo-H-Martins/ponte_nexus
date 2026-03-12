@@ -17,3 +17,13 @@ class CategoryRepository(BaseRepository):
         self.session.add(category)
         self.session.flush()
         return category
+
+    def list_all(self) -> list[CategoryModel]:
+        stmt = select(CategoryModel).order_by(CategoryModel.name)
+        return list(self.session.scalars(stmt))
+
+    def delete_by_id(self, category_id: int) -> None:
+        category = self.session.get(CategoryModel, category_id)
+        if category:
+            self.session.delete(category)
+            self.session.flush()

@@ -3,7 +3,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.domain.enums import EntityType, TransactionType
 
@@ -33,3 +33,19 @@ class TransactionImportSchema(BaseModel):
             return None
         s = str(v).strip()
         return s if s else None
+
+
+class ManualTransactionInput(BaseModel):
+    """Schema de validação para lançamento manual via formulário."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    source_entity_id: int = Field(gt=0)
+    source_account_id: int = Field(gt=0)
+    destination_account_id: int = Field(gt=0)
+    transaction_date: date
+    category_id: int = Field(gt=0)
+    description: str = ""
+    amount: Decimal = Field(gt=Decimal("0"))
+    transaction_type: TransactionType
+    currency: str = Field(default="BRL", min_length=3, max_length=3)

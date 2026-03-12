@@ -20,3 +20,27 @@ class EntityRepository(BaseRepository):
         self.session.add(entity)
         self.session.flush()
         return entity
+
+    def list_all(self) -> list[EntityModel]:
+        stmt = select(EntityModel).order_by(EntityModel.name)
+        return list(self.session.scalars(stmt))
+
+    def list_by_type(self, entity_type: str) -> list[EntityModel]:
+        stmt = (
+            select(EntityModel)
+            .where(EntityModel.entity_type == entity_type)
+            .order_by(EntityModel.name)
+        )
+        return list(self.session.scalars(stmt))
+
+    def create(self, name: str, entity_type: str) -> EntityModel:
+        entity = EntityModel(name=name, entity_type=entity_type)
+        self.session.add(entity)
+        self.session.flush()
+        return entity
+
+    def delete_by_id(self, entity_id: int) -> None:
+        entity = self.session.get(EntityModel, entity_id)
+        if entity:
+            self.session.delete(entity)
+            self.session.flush()
