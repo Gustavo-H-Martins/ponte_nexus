@@ -1,11 +1,13 @@
 import re
+from decimal import Decimal
 
 from src.config.database import SessionLocal
-from src.models.db_models import AccountModel, CategoryModel, CompanyModel, EntityModel
+from src.models.db_models import AccountModel, CategoryModel, CompanyModel, EntityModel, IncomeSourceModel
 from src.repositories.account_repository import AccountRepository
 from src.repositories.category_repository import CategoryRepository
 from src.repositories.company_repository import CompanyRepository
 from src.repositories.entity_repository import EntityRepository
+from src.repositories.income_source_repository import IncomeSourceRepository
 
 
 def _normalizar_cnpj(cnpj: str) -> str:
@@ -92,19 +94,8 @@ class CatalogService:
 
     def list_companies(self) -> list[dict]:
         """Retorna empresas com nome e tipo da entidade vinculada."""
-        from sqlalchemy import select, text
-
-        from src.config.database import engine
-
-        with engine.connect() as conn:
-            rows = conn.execute(
-                text(
-                    "SELECT c.id, c.cnpj, c.company_type, c.entity_id, e.name AS nome_empresa "
-                    "FROM empresas c JOIN entidades e ON e.id = c.entity_id "
-                    "ORDER BY e.name"
-                )
-            ).mappings().all()
-            return [dict(r) for r in rows]
+        with self.session_factory() as session:
+            return CompanyRepository(session).list_with_entity()
 
     def create_company(
         self, nome_empresa: str, cnpj: str, company_type: str
@@ -125,6 +116,37 @@ class CatalogService:
     def delete_company(self, company_id: int) -> None:
         with self.session_factory() as session:
             CompanyRepository(session).delete_by_id(company_id)
+            session.commit()
+
+    # ── Fontes de Renda ───────────────────────────────────────────────────────
+
+    def list_income_sources(self, entity_id: int | None = None) -> list[IncomeSourceModel]:
+        """Lista fontes de renda, opcionalmente filtradas por entidade."""
+        with self.session_factory() as session:
+            repo = IncomeSourceRepository(session)
+            sources = repo.list_by_entity(entity_id) if entity_id else repo.list_active()
+            return [_detach_income_source(s) for s in sources]
+
+    def create_income_source(
+        self,
+        entity_id: int,
+        name: str,
+        source_type: str,
+        expected_monthly_amount: Decimal | None = None,
+    ) -> IncomeSourceModel:
+        with self.session_factory() as session:
+            source = IncomeSourceRepository(session).create(
+                entity_id=entity_id,
+                name=name,
+                source_type=source_type,
+                expected_monthly_amount=expected_monthly_amount,
+            )
+            session.commit()
+            return _detach_income_source(source)
+
+    def deactivate_income_source(self, source_id: int) -> None:
+        with self.session_factory() as session:
+            IncomeSourceRepository(session).deactivate(source_id)
             session.commit()
 
 
@@ -148,3 +170,8 @@ def _detach_category(c: CategoryModel) -> CategoryModel:
 def _detach_company(c: CompanyModel) -> CompanyModel:
     c.id; c.cnpj; c.company_type; c.entity_id  # noqa: E702
     return c
+
+
+def _detach_income_source(s: IncomeSourceModel) -> IncomeSourceModel:
+    s.id; s.entity_id; s.name; s.source_type; s.is_active  # noqa: E702
+    return s

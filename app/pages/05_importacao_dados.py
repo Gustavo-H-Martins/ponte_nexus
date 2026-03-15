@@ -10,9 +10,31 @@ import streamlit as st
 from src.services.ingestion_service import create_ingestion_service
 from app.ui import page_header
 
-st.set_page_config(page_title="Importação · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Importar Extrato · Ponte Nexus", layout="wide", page_icon="💠", initial_sidebar_state="collapsed")
 
-page_header("Importação de Dados", "Envie um arquivo CSV, XLSX ou JSON com seus lançamentos")
+page_header("Importar Extrato", "Importe o extrato do seu banco ou planilha")
+
+with st.expander("\u2139\ufe0f Como preparar seu arquivo para importação", expanded=False):
+    st.markdown("""
+    **Dica de ouro:** A forma mais fácil é copiar o extrato do seu banco no formato CSV e ajustar os nomes das colunas.
+
+    O arquivo precisa ter exatamente estes cabeçalhos (linha 1):  
+    `id_lancamento`, `data`, `tipo_entidade`, `nome_entidade`, `tipo_transacao`, `categoria`, `descricao`, `valor`, `moeda`, `conta_origem`, `conta_destino`
+
+    **Tipos de transação aceitos:**  
+    `receita` | `despesa` | `transferencia_pf_pj` | `transferencia_pj_pf` | `aporte_pf_pj` | `emprestimo_pf_pj` | `dividendos` | `pro_labore`
+
+    **Formato de data:** YYYY-MM-DD (ex: 2026-01-15)
+
+    """)
+    _sample_path = Path(__file__).resolve().parents[2] / "data" / "samples" / "sample_valid.csv"
+    if _sample_path.exists():
+        st.download_button(
+            label="⬇️ Baixar modelo (sample_valid.csv)",
+            data=_sample_path.read_bytes(),
+            file_name="modelo_importacao.csv",
+            mime="text/csv",
+        )
 
 st.markdown(
     """
@@ -88,8 +110,13 @@ if st.button("Importar", type="primary"):
         if len(result["errors"]) > 20:
             st.caption(f"… e mais {len(result['errors']) - 20} erros não exibidos.")
     else:
+        n_inserted = result['records_inserted']
+        n_skipped  = result['records_skipped']
+        st.toast(f"✅ {n_inserted} registro(s) importado(s) com sucesso!", icon="✅")
         st.success(
-            f"Concluído: {result['records_inserted']} registro(s) inserido(s), "
-            f"{result['records_skipped']} ignorado(s) (já existiam)."
+            f"Concluído: {n_inserted} registro(s) inserido(s), "
+            f"{n_skipped} ignorado(s) (já existiam)."
         )
         st.cache_data.clear()
+        if st.button("📋 Ver no extrato", type="primary"):
+            st.switch_page("pages/06_lancamentos.py")

@@ -6,10 +6,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import streamlit as st
-from sqlalchemy import text
 
 from app.ui import TIPO_LABEL, page_header
-from src.config.database import SessionLocal, engine, init_db
+from src.config.database import SessionLocal, init_db
 from src.domain.enums import TransactionType
 from src.repositories.account_repository import AccountRepository
 from src.repositories.category_repository import CategoryRepository
@@ -19,14 +18,15 @@ from src.services.manual_entry_service import ManualEntryService
 from src.validation.schemas import ManualTransactionInput
 
 st.set_page_config(
-    page_title="Novo Lançamento · Ponte Nexus", layout="wide", page_icon="💠"
+    page_title="Registrar Transação · Ponte Nexus", layout="wide", page_icon="💠",
+    initial_sidebar_state="collapsed",
 )
 
 init_db()
 
 page_header(
-    "Novo Lançamento",
-    "Registre transações individuais e gerencie seu catálogo de dados",
+    "Registrar Transação",
+    "Registre uma receita, despesa ou transferência",
 )
 
 # ── Serviços ──────────────────────────────────────────────────────────────────
@@ -45,16 +45,8 @@ def _load_entities() -> list[dict]:
 
 @st.cache_data(ttl=30)
 def _load_accounts() -> list[dict]:
-    with engine.connect() as conn:
-        rows = conn.execute(
-            text(
-                "SELECT a.id, a.account_name, a.entity_id, a.currency,"
-                " e.name AS entity_name, e.entity_type "
-                "FROM contas a JOIN entidades e ON e.id = a.entity_id "
-                "ORDER BY e.name, a.account_name"
-            )
-        ).mappings().all()
-        return [dict(r) for r in rows]
+    with SessionLocal() as session:
+        return AccountRepository(session).list_with_entity()
 
 
 @st.cache_data(ttl=30)
@@ -296,7 +288,11 @@ with tab_form:
                             currency=src_account_sel.get("currency", "BRL"),
                         )
                         _entry.create_transaction(data)
-                        st.success("✅ Lançamento registrado com sucesso!")
+                        tipo_label = _TX_LABELS.get(tx_type_value, tx_type_value)
+                        st.toast(
+                            f"✅ {tipo_label} de R$ {amount:,.2f} em {cat_label} registrada!",
+                            icon="✅",
+                        )
                         _reload_all()
                         st.session_state["fv"] = fv + 1
                         st.rerun()

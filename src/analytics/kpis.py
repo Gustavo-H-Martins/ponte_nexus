@@ -64,3 +64,68 @@ def revenue_expense_by_month(df: pd.DataFrame) -> pd.DataFrame:
         .sum()
         .sort_values("month")
     )
+
+
+def income_by_source(df: pd.DataFrame) -> pd.DataFrame:
+    """Retorna total de receitas por categoria (fonte), ordenado decrescente.
+
+    Considera tipos de receita: 'receita', 'pro_labore', 'dividendos'.
+    Requer coluna 'category' no DataFrame.
+    """
+    income_types = {"receita", "pro_labore", "dividendos"}
+    data = df[df["transaction_type"].isin(income_types)].copy()
+    if data.empty:
+        return pd.DataFrame(columns=["category", "amount"])
+    return (
+        data.groupby("category", as_index=False)["amount"]
+        .sum()
+        .sort_values("amount", ascending=False)
+    )
+
+
+def top_expense_categories(df: pd.DataFrame, n: int = 5) -> pd.DataFrame:
+    """Retorna as N categorias com maior volume de despesa, ordenadas decrescente.
+
+    Requer coluna 'category' no DataFrame.
+    """
+    data = df[df["transaction_type"] == "despesa"].copy()
+    if data.empty:
+        return pd.DataFrame(columns=["category", "amount"])
+    return (
+        data.groupby("category", as_index=False)["amount"]
+        .sum()
+        .sort_values("amount", ascending=False)
+        .head(n)
+    )
+
+
+def period_comparison(
+    df: pd.DataFrame, current_period: str, previous_period: str
+) -> dict[str, float]:
+    """Compara receita, despesa e saldo entre dois períodos no formato YYYY-MM.
+
+    Retorna deltas absolutos e percentuais para cada indicador.
+    """
+    def _kpis_for_period(period: str) -> dict[str, float]:
+        mask = pd.to_datetime(df["date"]).dt.to_period("M").astype(str) == period
+        return income_expense_summary(df[mask])
+
+    current = _kpis_for_period(current_period)
+    previous = _kpis_for_period(previous_period)
+
+    def _pct_change(curr: float, prev: float) -> float:
+        if prev == 0.0:
+            return 0.0
+        return round((curr - prev) / abs(prev) * 100, 2)
+
+    return {
+        "income_current": current["income"],
+        "income_previous": previous["income"],
+        "income_delta_pct": _pct_change(current["income"], previous["income"]),
+        "expense_current": current["expense"],
+        "expense_previous": previous["expense"],
+        "expense_delta_pct": _pct_change(current["expense"], previous["expense"]),
+        "net_current": current["net"],
+        "net_previous": previous["net"],
+        "net_delta_pct": _pct_change(current["net"], previous["net"]),
+    }

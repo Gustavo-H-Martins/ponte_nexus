@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from src.models.db_models import AccountModel
+from src.models.db_models import AccountModel, EntityModel
 from src.repositories.base import BaseRepository
 
 
@@ -42,3 +42,22 @@ class AccountRepository(BaseRepository):
         if account:
             self.session.delete(account)
             self.session.flush()
+
+    def list_with_entity(self) -> list[dict]:
+        """Retorna contas com dados da entidade vinculada, ordenadas por entidade e nome."""
+        rows = self.session.execute(
+            select(AccountModel, EntityModel)
+            .join(EntityModel, AccountModel.entity_id == EntityModel.id)
+            .order_by(EntityModel.name, AccountModel.account_name)
+        ).all()
+        return [
+            {
+                "id": acc.id,
+                "account_name": acc.account_name,
+                "entity_id": acc.entity_id,
+                "currency": acc.currency,
+                "entity_name": ent.name,
+                "entity_type": ent.entity_type,
+            }
+            for acc, ent in rows
+        ]

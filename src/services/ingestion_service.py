@@ -36,10 +36,9 @@ class IngestionService:
 
     def ingest_file(self, file_path: str) -> dict[str, Any]:
         """Valida e persiste registros a partir de um caminho de arquivo."""
-        result, df = self.pipeline.run_upload(
-            filename=file_path,
-            file_bytes=open(file_path, "rb").read(),
-        )
+        with open(file_path, "rb") as f:
+            file_bytes = f.read()
+        result, df = self.pipeline.run_upload(filename=file_path, file_bytes=file_bytes)
         if result["status"] == "failed":
             return result
         return self._persist_and_update(result, df)

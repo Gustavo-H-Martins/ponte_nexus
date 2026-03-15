@@ -15,3 +15,14 @@ class TransactionType(str, Enum):
     EMPRESTIMO_PF_PJ      = "emprestimo_pf_pj"
     DIVIDENDOS            = "dividendos"
     PRO_LABORE            = "pro_labore"
+
+
+class IncomeSourceType(str, Enum):
+    """Tipos de fonte de renda para classificação de receitas nomeadas."""
+    SALARIO      = "salario"
+    FREELANCE    = "freelance"
+    DIVIDENDOS   = "dividendos"
+    PRO_LABORE   = "pro_labore"
+    INVESTIMENTO = "investimento"
+    ALUGUEL      = "aluguel"
+    OUTRO        = "outro"

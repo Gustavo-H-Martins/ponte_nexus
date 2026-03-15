@@ -7,28 +7,26 @@ import streamlit as st
 
 from src.config.database import init_db
 
-st.set_page_config(
-    page_title="Ponte Nexus",
-    page_icon="💠",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 init_db()
 
-from app.ui import page_header  # noqa: E402
-
-page_header("Ponte Nexus", "Análise financeira integrada entre Pessoa Física e Pessoa Jurídica")
-
-st.markdown(
-    """
-Use o menu lateral para navegar entre as páginas:
-
-- **Dashboard Geral** — KPIs do período: receitas PJ, receitas PF, despesas e saldo
-- **Fluxo PF ↔ PJ** — Transferências, aportes e retiradas entre PF e PJ
-- **Distribuição de Renda** — Pró-labore e dividendos por período
-- **Investimentos PF na PJ** — Aportes e empréstimos da PF para a PJ
-- **Lançamentos** — Lista completa com filtros por período, categoria e entidade
-- **Importação de Dados** — Upload de arquivos CSV, XLSX ou JSON
-"""
+pages = st.navigation(
+    {
+        "Pessoal": [
+            st.Page("pages/08_painel_pessoal.py", title="Meu Bolso", icon="👤"),
+            st.Page("pages/10_orcamento.py",      title="Orçamento",  icon="🎯"),
+        ],
+        "Empresa": [
+            st.Page("pages/01_dashboard_geral.py", title="Visão Geral", icon="📊"),
+        ],
+        "Transações": [
+            st.Page("pages/06_lancamentos.py",      title="Extrato",             icon="📋"),
+            st.Page("pages/07_novo_lancamento.py",  title="Registrar Transação", icon="✏️"),
+            st.Page("pages/05_importacao_dados.py", title="Importar Extrato",    icon="📂"),
+        ],
+        "Ajuda": [
+            st.Page("pages/09_ajuda.py",  title="Como Usar",          icon="❓"),
+            st.Page("pages/12_planos.py", title="Planos e Assinatura", icon="⭐"),
+        ],
+    }
 )
+pages.run()

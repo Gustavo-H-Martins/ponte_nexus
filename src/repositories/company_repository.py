@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from src.models.db_models import CompanyModel
+from src.models.db_models import CompanyModel, EntityModel
 from src.repositories.base import BaseRepository
 
 
@@ -28,3 +28,21 @@ class CompanyRepository(BaseRepository):
         if company:
             self.session.delete(company)
             self.session.flush()
+
+    def list_with_entity(self) -> list[dict]:
+        """Retorna empresas com nome da entidade vinculada, ordenadas por nome."""
+        rows = self.session.execute(
+            select(CompanyModel, EntityModel)
+            .join(EntityModel, CompanyModel.entity_id == EntityModel.id)
+            .order_by(EntityModel.name)
+        ).all()
+        return [
+            {
+                "id": co.id,
+                "cnpj": co.cnpj,
+                "company_type": co.company_type,
+                "entity_id": co.entity_id,
+                "nome_empresa": ent.name,
+            }
+            for co, ent in rows
+        ]

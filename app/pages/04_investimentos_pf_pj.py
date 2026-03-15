@@ -11,7 +11,7 @@ from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 _TIPOS = {"aporte_pf_pj", "emprestimo_pf_pj"}
 
-st.set_page_config(page_title="Investimentos PF na PJ · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Aportes na Empresa · Ponte Nexus", layout="wide", page_icon="💠")
 
 
 @st.cache_data(ttl=30)
@@ -20,13 +20,23 @@ def _get_data():
     return df[df["transaction_type"].isin(_TIPOS)].copy()
 
 
-is_dark = page_header("Investimentos PF na PJ", "Aportes e empréstimos da Pessoa Física para a Pessoa Jurídica")
+is_dark = page_header("Aportes na Empresa", "Capital que você investiu na empresa")
 LAYOUT = plotly_layout(is_dark)
 
 df = _get_data()
 
 if df.empty:
-    st.info("Nenhum aporte ou empréstimo PF → PJ encontrado.")
+    st.info(
+        "💭 Nenhum aporte ou empréstimo da sua parte para a empresa ainda. "
+        "Registre um aporte de capital ou empréstimo para visualizar esta página."
+    )
+    col_a, col_b, _ = st.columns([2, 2, 4])
+    with col_a:
+        if st.button("✏️ Registrar aporte", type="primary"):
+            st.switch_page("pages/07_novo_lancamento.py")
+    with col_b:
+        if st.button("📂 Importar extrato"):
+            st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
 total_aportes    = float(df.loc[df["transaction_type"] == "aporte_pf_pj",    "amount"].sum())
@@ -36,6 +46,17 @@ col1, col2, col3 = st.columns(3)
 col1.metric("📊 Aportes",          f"R$ {total_aportes:,.2f}")
 col2.metric("🏦 Empréstimos",       f"R$ {total_emprestimos:,.2f}")
 col3.metric("∑ Total Investido", f"R$ {total_aportes + total_emprestimos:,.2f}")
+
+with st.expander("ℹ️ Aporte vs Empréstimo — qual a diferença?", expanded=False):
+    st.markdown("""
+    **Aporte de capital** — você coloca dinheiro na empresa como investimento permanente.  
+    Esse valor aumenta o patrimônio líquido da empresa e não precisa ser devolvido.
+
+    **Empréstimo PF → PJ** — você empresta dinheiro para a empresa com a intenção de receber de volta.  
+    A empresa registra como dívida (passivo) e você como crédito a receber.
+
+    **Dica:** Formalize empréstimos em contrato assinado para evitar questionamentos fiscais.
+    """)
 
 st.divider()
 

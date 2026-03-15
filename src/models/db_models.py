@@ -1,4 +1,4 @@
-from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.config.database import Base
@@ -70,3 +70,32 @@ class CompanyModel(Base):
     entity_id: Mapped[int] = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False, unique=True)
     cnpj: Mapped[str] = mapped_column(String(18), nullable=False, unique=True)
     company_type: Mapped[str] = mapped_column(String(64), nullable=False, default="ltda")
+
+
+class IncomeSourceModel(Base):
+    """Fonte de renda nomeada vinculada a uma entidade — permite classificar de onde vem cada receita."""
+
+    __tablename__ = "fontes_renda"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    entity_id: Mapped[int] = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    expected_monthly_amount: Mapped[Numeric | None] = mapped_column(Numeric(14, 2), nullable=True)
+    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
+
+
+class BudgetModel(Base):
+    """Meta de gasto mensal por categoria — base para alertas de orçamento."""
+
+    __tablename__ = "orcamentos"
+    __table_args__ = (
+        UniqueConstraint("category_id", "year_month", name="uq_budget_category_month"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey(FK_CATEGORIES_ID), nullable=False)
+    year_month: Mapped[str] = mapped_column(String(7), nullable=False)  # formato YYYY-MM
+    limit_amount: Mapped[Numeric] = mapped_column(Numeric(14, 2), nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), nullable=False)

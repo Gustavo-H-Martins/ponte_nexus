@@ -10,7 +10,7 @@ from src.analytics.loader import load_transactions_df
 from app.ui import page_header, TIPO_LABEL
 from app.export import generate_excel
 
-st.set_page_config(page_title="Lançamentos · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Extrato · Ponte Nexus", layout="wide", page_icon="💠")
 
 
 @st.cache_data(ttl=30)
@@ -18,17 +18,24 @@ def _get_data() -> pd.DataFrame:
     return load_transactions_df()
 
 
-page_header("Lançamentos", "Lista completa com filtros por período, categoria e entidade")
+page_header("Extrato", "Tudo que entrou e saiu nas datas selecionadas")
 
 df = _get_data()
 
 if df.empty:
-    st.info("Nenhum lançamento encontrado. Importe dados na página **Importação de Dados**.")
+    st.info("💭 Nenhuma transação cadastrada ainda. Comece registrando ou importando seu extrato.")
+    col_a, col_b, _ = st.columns([2, 2, 4])
+    with col_a:
+        if st.button("✏️ Registrar transação", type="primary"):
+            st.switch_page("pages/07_novo_lancamento.py")
+    with col_b:
+        if st.button("📂 Importar extrato"):
+            st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
 # ── Filtros ────────────────────────────────────────────────────────────────────
 st.markdown('<span class="nx-section-label">Filtros</span>', unsafe_allow_html=True)
-col_f1, col_f2, col_f3 = st.columns(3)
+col_f1, col_f2, col_f3, col_f4 = st.columns(4)
 
 with col_f1:
     min_date = df["date"].min().date()
@@ -48,6 +55,12 @@ with col_f3:
     entity_types = sorted(df["source_entity_type"].dropna().unique().tolist())
     selected_entity_types = st.multiselect("Origem (PF / PJ)", entity_types, default=[])
 
+with col_f4:
+    _all_types = sorted(df["transaction_type"].dropna().unique().tolist())
+    _type_label_map = {TIPO_LABEL.get(t, t): t for t in _all_types}
+    selected_type_labels = st.multiselect("Tipo", list(_type_label_map.keys()), default=[])
+    selected_types = [_type_label_map[lbl] for lbl in selected_type_labels]
+
 # ── Aplicar filtros ────────────────────────────────────────────────────────────
 filtered = df.copy()
 
@@ -63,7 +76,21 @@ if selected_categories:
 if selected_entity_types:
     filtered = filtered[filtered["source_entity_type"].isin(selected_entity_types)]
 
+if selected_types:
+    filtered = filtered[filtered["transaction_type"].isin(selected_types)]
+
 st.caption(f"{len(filtered)} lançamento(s) encontrado(s)")
+
+# ── Resumo financeiro do período ──────────────────────────────────────────────
+_INCOME_TYPES = {"receita", "pro_labore", "dividendos"}
+_total_in  = float(filtered[filtered["transaction_type"].isin(_INCOME_TYPES)]["amount"].sum())
+_total_out = float(filtered[filtered["transaction_type"] == "despesa"]["amount"].sum())
+_saldo     = _total_in - _total_out
+
+_sm1, _sm2, _sm3 = st.columns(3)
+_sm1.metric("↑ Entradas", f"R$ {_total_in:,.2f}")
+_sm2.metric("↓ Saídas",   f"R$ {_total_out:,.2f}")
+_sm3.metric("⚖️ Saldo",   f"R$ {_saldo:,.2f}")
 
 # ── Tabela completa ────────────────────────────────────────────────────────────
 _COL_MAP = {

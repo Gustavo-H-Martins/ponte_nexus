@@ -11,7 +11,7 @@ from src.analytics.loader import load_transactions_df
 from src.analytics.pf_pj_analysis import summarize_pf_pj_direction
 from app.ui import page_header, plotly_layout, TIPO_LABEL, TYPE_COLORS
 
-st.set_page_config(page_title="Fluxo PF ↔ PJ · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Transferências · Ponte Nexus", layout="wide", page_icon="💠")
 
 
 @st.cache_data(ttl=30)
@@ -19,16 +19,23 @@ def _get_flow():
     return pf_pj_flow(load_transactions_df())
 
 
-is_dark = page_header("Fluxo PF ↔ PJ", "Transferências, aportes e retiradas entre Pessoa Física e Jurídica")
+is_dark = page_header("Transferências", "Dinheiro que circulou entre você e sua empresa")
 LAYOUT = plotly_layout(is_dark)
 
 df_flow = _get_flow()
 
 if df_flow.empty:
     st.info(
-        "Nenhum fluxo PF ↔ PJ encontrado. "
-        "Importe transações de transferência, aporte ou distribuição."
+        "💭 Nenhum fluxo entre você e sua empresa ainda. "
+        "Registre uma transferência, aporte ou distribuição de dividendos para visualizar esta página."
     )
+    col_a, col_b, _ = st.columns([2, 2, 4])
+    with col_a:
+        if st.button("✏️ Registrar transação", type="primary"):
+            st.switch_page("pages/07_novo_lancamento.py")
+    with col_b:
+        if st.button("📂 Importar extrato"):
+            st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
 # Totais por direção
@@ -40,6 +47,21 @@ col1, col2, col3 = st.columns(3)
 col1.metric("👤→🏢 PF → PJ (aportes / empréstimos)", f"R$ {pf_to_pj:,.2f}")
 col2.metric("🏢→👤 PJ → PF (retiradas / dividendos)", f"R$ {pj_to_pf:,.2f}")
 col3.metric("Saldo retornado à PF", f"R$ {pj_to_pf - pf_to_pj:,.2f}")
+
+with st.expander("ℹ️ O que significam esses tipos de fluxo?", expanded=False):
+    st.markdown("""
+    **Aporte PF → PJ** — dinheiro que você colocou na empresa como capital próprio (investimento).
+
+    **Empréstimo PF → PJ** — valor que você emprestou para a empresa com intenção de receber de volta.
+
+    **Transferência PF → PJ** — movimentação genérica de dinheiro da sua conta pessoal para a empresa.
+
+    **Pró-labore** — remuneração mensal que você recebe da empresa como sócio-administrador.
+
+    **Dividendos** — distribuição dos lucros da empresa para os sócios. Em geral isento de IR para PF.
+
+    **Saldo retornado** — quanto a empresa já te devolveu em relação ao que você colocou.
+    """)
 
 st.divider()
 

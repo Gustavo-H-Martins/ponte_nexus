@@ -1,4 +1,4 @@
-﻿"""UtilitÃ¡rios de UI â€” estilos e helpers reutilizÃ¡veis para o Ponte Nexus."""
+﻿"""Utilitários de UI — estilos e helpers reutilizáveis para o Ponte Nexus."""
 import streamlit as st
 
 
@@ -19,7 +19,7 @@ LIGHT_TEXT      = "#0A192F"
 LIGHT_MUTED     = "#64748B"
 ACCENT_PETROL   = "#0D7A7A"
 
-# Paleta de tipos de transaÃ§Ã£o
+# Paleta de tipos de transação
 TYPE_COLORS: dict[str, str] = {
     "receita":             "#64FFDA",
     "despesa":             "#FF6B6B",
@@ -31,16 +31,16 @@ TYPE_COLORS: dict[str, str] = {
     "transferencia_pj_pf": "#80DEEA",
 }
 
-# Mapa legÃ­vel para exibiÃ§Ã£o
+# Mapa legível para exibição
 TIPO_LABEL: dict[str, str] = {
     "receita":             "Receita",
     "despesa":             "Despesa",
-    "pro_labore":          "PrÃ³-Labore",
+    "pro_labore":          "Pró-Labore",
     "dividendos":          "Dividendos",
-    "aporte_pf_pj":        "Aporte PFâ†’PJ",
-    "emprestimo_pf_pj":    "EmprÃ©stimo PFâ†’PJ",
-    "transferencia_pf_pj": "TransferÃªncia PFâ†’PJ",
-    "transferencia_pj_pf": "TransferÃªncia PJâ†’PF",
+    "aporte_pf_pj":        "Aporte PF→PJ",
+    "emprestimo_pf_pj":    "Empréstimo PF→PJ",
+    "transferencia_pf_pj": "Transferência PF→PJ",
+    "transferencia_pj_pf": "Transferência PJ→PF",
 }
 
 
@@ -145,7 +145,7 @@ hr { border-color: #1E3A5F !important; margin: 1.2rem 0 !important; }
 </style>
 """
 
-# â”€â”€â”€ Overrides para light mode (Cinza Gelo / Marinho / Azul PetrÃ³leo) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â”€â”€â”€ Overrides para light mode (Cinza Gelo / Marinho / Azul Petróleo) â”€â”€â”€â”€â”€â”€â”€â”€â”€
 _CSS_LIGHT_OVERRIDES = """
 <style>
 .stApp, .main, section.main, [data-testid="stAppViewContainer"] {
@@ -203,7 +203,7 @@ def theme_selector() -> bool:
 
 
 def apply_theme(is_dark: bool = True) -> None:
-    """Injeta o CSS fintech (dark + overrides light se necessÃ¡rio)."""
+    """Injeta o CSS fintech (dark + overrides light se necessário)."""
     st.markdown(_CSS_BASE, unsafe_allow_html=True)
     if not is_dark:
         st.markdown(_CSS_LIGHT_OVERRIDES, unsafe_allow_html=True)
@@ -231,7 +231,7 @@ def plotly_layout(is_dark: bool = True) -> dict:
 
 
 def page_header(title: str, subtitle: str = "") -> bool:
-    """Renderiza cabeÃ§alho padronizado + aplica tema. Retorna is_dark."""
+    """Renderiza cabeçalho padronizado + aplica tema. Retorna is_dark."""
     is_dark = theme_selector()
     apply_theme(is_dark)
     st.markdown('<div class="nx-kpi-accent"></div>', unsafe_allow_html=True)

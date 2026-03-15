@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from src.domain.enums import EntityType, TransactionType
+from src.domain.enums import EntityType, IncomeSourceType, TransactionType
 
 
 class TransactionImportSchema(BaseModel):
@@ -49,3 +49,29 @@ class ManualTransactionInput(BaseModel):
     amount: Decimal = Field(gt=Decimal("0"))
     transaction_type: TransactionType
     currency: str = Field(default="BRL", min_length=3, max_length=3)
+
+
+class IncomeSourceInput(BaseModel):
+    """Schema de validação para cadastro de fonte de renda."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    entity_id: int = Field(gt=0)
+    name: str = Field(min_length=1, max_length=255)
+    source_type: IncomeSourceType
+    expected_monthly_amount: Decimal | None = Field(default=None, ge=Decimal("0"))
+
+
+class BudgetInput(BaseModel):
+    """Schema de validação para definição de meta de gasto mensal."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    category_id: int = Field(gt=0)
+    year_month: str = Field(
+        min_length=7,
+        max_length=7,
+        pattern=r"^\d{4}-\d{2}$",
+        description="Período no formato YYYY-MM",
+    )
+    limit_amount: Decimal = Field(gt=Decimal("0"))
