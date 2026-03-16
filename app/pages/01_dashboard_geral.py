@@ -1,8 +1,3 @@
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
@@ -11,13 +6,11 @@ from src.analytics.cashflow import pf_pj_flow
 from src.analytics.kpis import monthly_net_result, period_comparison, pf_pj_kpis, revenue_expense_by_month
 from src.analytics.loader import load_transactions_df
 from src.analytics.pf_pj_analysis import summarize_pf_pj_direction
-from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
+from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL, feather_icon
 from app.export import generate_dashboard_pdf
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Visão Geral · Ponte Nexus", layout="wide", page_icon="💠")
-
-
+st.set_page_config(page_title="Visão Geral · Ponte Nexus", layout="wide", page_icon="📊")
 def _render_onboarding() -> None:
     """Exibe wizard de configuração inicial de 4 etapas quando o banco está vazio."""
     catalog = CatalogService()
@@ -26,17 +19,19 @@ def _render_onboarding() -> None:
     income_sources = catalog.list_income_sources() if existing_pf else []
 
     # ── Indicador de progresso visual ────────────────────────────────────────
-    step_done   = "✅"
-    step_active = "⏳"
-    step_todo   = "○"
-
+    step_done   = feather_icon("check-circle", 20, "#64FFDA", "Concluído")
+    step_active = feather_icon("clock", 20, "#FFD600", "Em andamento")
+    step_todo   = feather_icon("circle", 20, "#8892B0", "Pendente")
     step1 = step_done if existing_pf   else step_active
     step2 = step_done if existing_pj   else (step_active if existing_pf   else step_todo)
     step3 = step_done if income_sources else (step_active if existing_pj or (existing_pf and not existing_pj) else step_todo)
     # Passo 4 fica disponível após completar os anteriores (PF obrigatório) 
     step4 = step_active if existing_pf else step_todo
 
-    st.markdown("### 👋 Bem-vindo ao Ponte Nexus!")
+    st.markdown(f"""
+        <span style='vertical-align:middle;'>{feather_icon('user', 28, '#64FFDA', 'Bem-vindo')}</span>
+        <span style='font-size:1.6rem;font-weight:700;margin-left:0.5rem;'>Bem-vindo ao Ponte Nexus!</span>
+    """, unsafe_allow_html=True)
     st.markdown(
         "Configure seu perfil em poucos passos para começar a entender suas finanças."
     )

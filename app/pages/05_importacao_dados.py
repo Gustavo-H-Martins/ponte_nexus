@@ -1,16 +1,12 @@
 import io
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import pandas as pd
 import streamlit as st
 
 from src.services.ingestion_service import create_ingestion_service
-from app.ui import page_header
+from app.ui import page_header, feather_icon
 
-st.set_page_config(page_title="Importar Extrato · Ponte Nexus", layout="wide", page_icon="💠", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Importar Extrato · Ponte Nexus", layout="wide", page_icon="📂", initial_sidebar_state="collapsed")
 
 page_header("Importar Extrato", "Importe o extrato do seu banco ou planilha")
 
@@ -30,7 +26,7 @@ with st.expander("\u2139\ufe0f Como preparar seu arquivo para importação", exp
     _sample_path = Path(__file__).resolve().parents[2] / "data" / "samples" / "sample_valid.csv"
     if _sample_path.exists():
         st.download_button(
-            label="⬇️ Baixar modelo (sample_valid.csv)",
+            label=f"{feather_icon('download', 18)} Baixar modelo (sample_valid.csv)",
             data=_sample_path.read_bytes(),
             file_name="modelo_importacao.csv",
             mime="text/csv",

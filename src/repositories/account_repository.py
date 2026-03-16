@@ -29,6 +29,15 @@ class AccountRepository(BaseRepository):
         stmt = select(AccountModel).order_by(AccountModel.account_name)
         return list(self.session.scalars(stmt))
 
+    def list_active(self) -> list[AccountModel]:
+        """Retorna apenas contas ativas, ordenadas por nome."""
+        stmt = (
+            select(AccountModel)
+            .where(AccountModel.is_active == True)  # noqa: E712
+            .order_by(AccountModel.account_name)
+        )
+        return list(self.session.scalars(stmt))
+
     def list_by_entity(self, entity_id: int) -> list[AccountModel]:
         stmt = (
             select(AccountModel)
@@ -36,6 +45,35 @@ class AccountRepository(BaseRepository):
             .order_by(AccountModel.account_name)
         )
         return list(self.session.scalars(stmt))
+
+    def create(
+        self,
+        account_name: str,
+        entity_id: int,
+        account_type: str = "conta_bancaria",
+        currency: str = "BRL",
+        description: str | None = None,
+    ) -> AccountModel:
+        """Cria uma nova conta. Lança ValueError se já existir conta com mesmo nome na entidade."""
+        if self.get_by_name_and_entity(account_name, entity_id):
+            raise ValueError(f"Conta '{account_name}' já existe para esta entidade.")
+        account = AccountModel(
+            account_name=account_name,
+            entity_id=entity_id,
+            account_type=account_type,
+            currency=currency,
+            description=description,
+        )
+        self.session.add(account)
+        self.session.flush()
+        return account
+
+    def deactivate(self, account_id: int) -> None:
+        """Desativa uma conta sem apagar o histórico de transações."""
+        account = self.session.get(AccountModel, account_id)
+        if account:
+            account.is_active = False
+            self.session.flush()
 
     def delete_by_id(self, account_id: int) -> None:
         account = self.session.get(AccountModel, account_id)
@@ -54,8 +92,11 @@ class AccountRepository(BaseRepository):
             {
                 "id": acc.id,
                 "account_name": acc.account_name,
+                "account_type": acc.account_type,
                 "entity_id": acc.entity_id,
                 "currency": acc.currency,
+                "description": acc.description,
+                "is_active": acc.is_active,
                 "entity_name": ent.name,
                 "entity_type": ent.entity_type,
             }

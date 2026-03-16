@@ -58,19 +58,39 @@ class CatalogService:
             return [_detach_account(a) for a in accounts]
 
     def create_account(
-        self, entity_id: int, account_name: str, currency: str = "BRL"
+        self,
+        entity_id: int,
+        account_name: str,
+        account_type: str = "conta_bancaria",
+        currency: str = "BRL",
+        description: str | None = None,
     ) -> AccountModel:
         with self.session_factory() as session:
-            account = AccountRepository(session).get_or_create(
-                account_name, entity_id, currency
+            account = AccountRepository(session).create(
+                account_name=account_name,
+                entity_id=entity_id,
+                account_type=account_type,
+                currency=currency,
+                description=description,
             )
             session.commit()
             return _detach_account(account)
+
+    def deactivate_account(self, account_id: int) -> None:
+        """Desativa uma conta preservando seu histórico de transações."""
+        with self.session_factory() as session:
+            AccountRepository(session).deactivate(account_id)
+            session.commit()
 
     def delete_account(self, account_id: int) -> None:
         with self.session_factory() as session:
             AccountRepository(session).delete_by_id(account_id)
             session.commit()
+
+    def list_accounts_with_entity(self) -> list[dict]:
+        """Retorna todas as contas com dados da entidade vinculada."""
+        with self.session_factory() as session:
+            return AccountRepository(session).list_with_entity()
 
     # ── Categorias ────────────────────────────────────────────────────────────
 
@@ -158,7 +178,7 @@ def _detach_entity(e: EntityModel) -> EntityModel:
 
 
 def _detach_account(a: AccountModel) -> AccountModel:
-    a.id; a.account_name; a.entity_id; a.currency  # noqa: E702
+    a.id; a.account_name; a.entity_id; a.currency; a.account_type; a.description; a.is_active  # noqa: E702
     return a
 
 

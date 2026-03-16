@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ponte-nexus"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "streamlit>=1.40.0",
+    "pandas>=2.2.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "SQLAlchemy>=2.0.0",
+    "alembic>=1.13.0",
+    "plotly>=5.24.0",
+    "openpyxl>=3.1.0",
+    "fpdf2>=2.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+]
+
+[tool.setuptools.packages.find]
+# Descobre automaticamente app/, src/, migrations/ como pacotes importáveis
+where = ["."]
+include = ["app*", "src*", "migrations*"]

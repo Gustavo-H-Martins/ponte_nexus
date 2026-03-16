@@ -1,4 +1,4 @@
-from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.config.database import Base
@@ -20,10 +20,13 @@ class EntityModel(Base):
 class AccountModel(Base):
     __tablename__ = "contas"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    entity_id: Mapped[int] = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False)
-    account_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    currency: Mapped[str] = mapped_column(String(3), nullable=False)
+    id:           Mapped[int]      = mapped_column(primary_key=True)
+    entity_id:    Mapped[int]      = mapped_column(ForeignKey(FK_ENTITIES_ID), nullable=False)
+    account_name: Mapped[str]      = mapped_column(String(255), nullable=False)
+    account_type: Mapped[str]      = mapped_column(String(32), nullable=False, default="conta_bancaria")
+    currency:     Mapped[str]      = mapped_column(String(3), nullable=False)
+    description:  Mapped[str|None] = mapped_column(Text, nullable=True)
+    is_active:    Mapped[bool]     = mapped_column(default=True, nullable=False)
 
 
 class CategoryModel(Base):
@@ -99,3 +102,18 @@ class BudgetModel(Base):
     year_month: Mapped[str] = mapped_column(String(7), nullable=False)  # formato YYYY-MM
     limit_amount: Mapped[Numeric] = mapped_column(Numeric(14, 2), nullable=False)
     created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
+
+
+class UserModel(Base):
+    """Usuário do sistema com credenciais e permissões."""
+
+    __tablename__ = "usuarios"
+
+    id:            Mapped[int]  = mapped_column(primary_key=True)
+    email:         Mapped[str]  = mapped_column(String(255), nullable=False, unique=True)
+    username:      Mapped[str]  = mapped_column(String(100), nullable=False)
+    password_hash: Mapped[str]  = mapped_column(String(255), nullable=False)
+    role:          Mapped[str]  = mapped_column(String(16),  nullable=False, default="user")
+    plan:          Mapped[str]  = mapped_column(String(16),  nullable=False, default="free")
+    is_active:     Mapped[bool] = mapped_column(Boolean,     nullable=False, default=True)
+    created_at:    Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), nullable=False)

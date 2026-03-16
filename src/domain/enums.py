@@ -6,6 +6,16 @@ class EntityType(str, Enum):
     PJ = "PJ"
 
 
+class AccountType(str, Enum):
+    """Tipos de conta financeira suportados pelo sistema."""
+    CONTA_BANCARIA = "conta_bancaria"
+    CAIXA          = "caixa"
+    COFRE          = "cofre"
+    INVESTIMENTOS  = "investimentos"
+    PROVISAO       = "provisao"
+    OUTRA          = "outra"
+
+
 class TransactionType(str, Enum):
     RECEITA               = "receita"
     DESPESA               = "despesa"
@@ -26,3 +36,15 @@ class IncomeSourceType(str, Enum):
     INVESTIMENTO = "investimento"
     ALUGUEL      = "aluguel"
     OUTRO        = "outro"
+
+
+class UserRole(str, Enum):
+    """Papel do usuário no sistema."""
+    ADMIN = "admin"
+    USER  = "user"
+
+
+class UserPlan(str, Enum):
+    """Plano de acesso do usuário."""
+    FREE = "free"
+    PRO  = "pro"

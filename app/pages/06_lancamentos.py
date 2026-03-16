@@ -1,14 +1,10 @@
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
 import pandas as pd
 import streamlit as st
 
 from src.analytics.loader import load_transactions_df
 from app.ui import page_header, TIPO_LABEL
 from app.export import generate_excel
+from app.ui import feather_icon
 
 st.set_page_config(page_title="Extrato · Ponte Nexus", layout="wide", page_icon="💠")
 
@@ -23,13 +19,13 @@ page_header("Extrato", "Tudo que entrou e saiu nas datas selecionadas")
 df = _get_data()
 
 if df.empty:
-    st.info("💭 Nenhuma transação cadastrada ainda. Comece registrando ou importando seu extrato.")
+    st.info(f"{feather_icon('message-circle', 20)} Nenhuma transação cadastrada ainda. Comece registrando ou importando seu extrato.")
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button("✏️ Registrar transação", type="primary"):
+        if st.button(f"{feather_icon('edit-3', 18)} Registrar transação", type="primary"):
             st.switch_page("pages/07_novo_lancamento.py")
     with col_b:
-        if st.button("📂 Importar extrato"):
+        if st.button(f"{feather_icon('folder', 18)} Importar extrato"):
             st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 

@@ -1,5 +1,33 @@
 ﻿"""Utilitários de UI — estilos e helpers reutilizáveis para o Ponte Nexus."""
 import streamlit as st
+from pathlib import Path
+
+# Diretório local de SVGs Feather (ex: app/icons/feather/arrow-right.svg)
+FEATHER_ICONS_PATH = Path(__file__).parent / "icons" / "feather"
+
+def feather_icon(name: str, size: int = 20, color: str = "#8892B0", alt: str = "") -> str:
+    """
+    Renderiza um ícone Feather SVG embutido para uso em Streamlit.
+    name: nome do ícone (ex: 'activity', 'user', 'plus')
+    size: tamanho em px
+    color: cor do stroke
+    alt: texto alternativo para acessibilidade
+    """
+    svg_path = FEATHER_ICONS_PATH / f"{name}.svg"
+    if not svg_path.exists():
+        return f"<span style='color:{color};font-size:{size}px'>?</span>"
+    svg = svg_path.read_text(encoding="utf-8")
+    # Ajusta tamanho e cor
+    svg = svg.replace("width=\"24\"", f"width=\"{size}\"")
+    svg = svg.replace("height=\"24\"", f"height=\"{size}\"")
+    svg = svg.replace("stroke=\"currentColor\"", f"stroke=\"{color}\"")
+    if alt:
+        svg = svg.replace("<svg ", f"<svg aria-label='{alt}' role='img' ")
+    return svg
+
+# Exemplo de uso:
+# st.markdown(feather_icon("activity", 24, "#007bff", "Indicador"), unsafe_allow_html=True)
+import streamlit as st
 
 
 # Paleta dark mode
