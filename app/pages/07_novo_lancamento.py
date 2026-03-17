@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import streamlit as st
 
-from app.ui import TIPO_LABEL, page_header
+from app.ui import TIPO_LABEL, page_header, require_write_access
 from src.config.database import SessionLocal, init_db
 from src.domain.enums import TransactionType
 from src.repositories.account_repository import AccountRepository
@@ -14,7 +14,7 @@ from src.services.manual_entry_service import ManualEntryService
 from src.validation.schemas import ManualTransactionInput
 
 st.set_page_config(
-    page_title="Registrar Transação · Ponte Nexus", layout="wide", page_icon="💠",
+    page_title="Registrar Transação · Ponte Nexus", layout="wide", page_icon="✏️",
     initial_sidebar_state="collapsed",
 )
 
@@ -24,37 +24,39 @@ page_header(
     "Registrar Transação",
     "Registre uma receita, despesa ou transferência",
 )
+require_write_access()
 
 # ── Serviços ──────────────────────────────────────────────────────────────────
-_catalog = CatalogService()
-_entry = ManualEntryService()
+owner_id: int | None = st.session_state.get("effective_owner_id")
+_catalog = CatalogService(owner_id=owner_id)
+_entry = ManualEntryService(owner_id=owner_id)
 
 # ── Loaders em cache (TTL curto para refletir cadastros recentes) ─────────────
 
 
 @st.cache_data(ttl=30)
-def _load_entities() -> list[dict]:
+def _load_entities(owner_id: int | None = None) -> list[dict]:
     with SessionLocal() as session:
-        rows = EntityRepository(session).list_all()
+        rows = EntityRepository(session, owner_id).list_all()
         return [{"id": r.id, "name": r.name, "entity_type": r.entity_type} for r in rows]
 
 
 @st.cache_data(ttl=30)
-def _load_accounts() -> list[dict]:
+def _load_accounts(owner_id: int | None = None) -> list[dict]:
     with SessionLocal() as session:
-        return AccountRepository(session).list_with_entity()
+        return AccountRepository(session, owner_id).list_with_entity()
 
 
 @st.cache_data(ttl=30)
-def _load_categories() -> list[dict]:
+def _load_categories(owner_id: int | None = None) -> list[dict]:
     with SessionLocal() as session:
-        rows = CategoryRepository(session).list_all()
+        rows = CategoryRepository(session, owner_id).list_all()
         return [{"id": r.id, "name": r.name, "group": r.category_group} for r in rows]
 
 
 @st.cache_data(ttl=30)
-def _load_companies() -> list[dict]:
-    return _catalog.list_companies()
+def _load_companies(owner_id: int | None = None) -> list[dict]:
+    return CatalogService(owner_id=owner_id).list_companies()
 
 
 def _reload_all() -> None:
@@ -95,9 +97,9 @@ tab_form, tab_config = st.tabs(["💰 Lançamento de Transação", "⚙️ Confi
 # TAB 1 — FORMULÁRIO DE LANÇAMENTO
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_form:
-    entities = _load_entities()
-    all_accounts = _load_accounts()
-    categories = _load_categories()
+    entities = _load_entities(owner_id)
+    all_accounts = _load_accounts(owner_id)
+    categories = _load_categories(owner_id)
 
     fv = st.session_state["fv"]  # versão do formulário para reset de widgets
 
@@ -425,7 +427,7 @@ with tab_config:
             '<span class="nx-section-label">Categorias Cadastradas</span>',
             unsafe_allow_html=True,
         )
-        cats = _load_categories()
+        cats = _load_categories(owner_id)
         if cats:
             import pandas as pd
 
@@ -486,7 +488,7 @@ with tab_config:
             '<span class="nx-section-label">Contas Cadastradas</span>',
             unsafe_allow_html=True,
         )
-        accs = _load_accounts()
+        accs = _load_accounts(owner_id)
         if accs:
             import pandas as pd
 
@@ -507,7 +509,7 @@ with tab_config:
             st.info("Nenhuma conta cadastrada.")
 
         col_add_acc, col_del_acc = st.columns(2, gap="large")
-        entities_for_acc = _load_entities()
+        entities_for_acc = _load_entities(owner_id)
 
         with col_add_acc:
             st.markdown(_SEC_ADD, unsafe_allow_html=True)
@@ -574,7 +576,7 @@ with tab_config:
             '<span class="nx-section-label">Entidades Cadastradas</span>',
             unsafe_allow_html=True,
         )
-        ents = _load_entities()
+        ents = _load_entities(owner_id)
         if ents:
             import pandas as pd
 
@@ -633,7 +635,7 @@ with tab_config:
             '<span class="nx-section-label">Empresas Cadastradas</span>',
             unsafe_allow_html=True,
         )
-        companies = _load_companies()
+        companies = _load_companies(owner_id)
         if companies:
             import pandas as pd
 

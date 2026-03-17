@@ -4,32 +4,32 @@ import plotly.express as px
 from src.analytics.cashflow import pf_pj_flow
 from src.analytics.loader import load_transactions_df
 from src.analytics.pf_pj_analysis import summarize_pf_pj_direction
-from app.ui import page_header, plotly_layout, TIPO_LABEL, TYPE_COLORS, feather_icon
+from app.ui import page_header, plotly_layout, TIPO_LABEL, TYPE_COLORS
 
 st.set_page_config(page_title="Transferências · Ponte Nexus", layout="wide", page_icon="🔄")
 
 
 @st.cache_data(ttl=30)
-def _get_flow():
-    return pf_pj_flow(load_transactions_df())
+def _get_flow(owner_id: int | None):
+    return pf_pj_flow(load_transactions_df(owner_id=owner_id))
 
 
 is_dark = page_header("Transferências", "Dinheiro que circulou entre você e sua empresa")
 LAYOUT = plotly_layout(is_dark)
 
-df_flow = _get_flow()
+df_flow = _get_flow(st.session_state.get("effective_owner_id"))
 
 if df_flow.empty:
     st.info(
-        f"{feather_icon('message-circle', 20)} Nenhum fluxo entre você e sua empresa ainda. "
+        "Nenhum fluxo entre você e sua empresa ainda. "
         "Registre uma transferência, aporte ou distribuição de dividendos para visualizar esta página."
     )
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button(f"{feather_icon('edit-3', 18)} Registrar transação", type="primary"):
+        if st.button("✏️ Registrar transação", type="primary"):
             st.switch_page("pages/07_novo_lancamento.py")
     with col_b:
-        if st.button(f"{feather_icon('folder', 18)} Importar extrato"):
+        if st.button("📂 Importar extrato"):
             st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
@@ -39,11 +39,11 @@ pf_to_pj = float(summary.loc[summary["direction"] == "pf_to_pj", "amount"].value
 pj_to_pf = float(summary.loc[summary["direction"] == "pj_to_pf", "amount"].values[0])
 
 col1, col2, col3 = st.columns(3)
-col1.metric(f"{feather_icon('user', 18)}→{feather_icon('briefcase', 18)} PF → PJ (aportes / empréstimos)", f"R$ {pf_to_pj:,.2f}")
-col2.metric(f"{feather_icon('briefcase', 18)}→{feather_icon('user', 18)} PJ → PF (retiradas / dividendos)", f"R$ {pj_to_pf:,.2f}")
+col1.metric("👤 → 🏢 PF → PJ (aportes / empréstimos)", f"R$ {pf_to_pj:,.2f}")
+col2.metric("🏢 → 👤 PJ → PF (retiradas / dividendos)", f"R$ {pj_to_pf:,.2f}")
 col3.metric("Saldo retornado à PF", f"R$ {pj_to_pf - pf_to_pj:,.2f}")
 
-with st.expander(f"{feather_icon('info', 18)} O que significam esses tipos de fluxo?", expanded=False):
+with st.expander("ℹ️ O que significam esses tipos de fluxo?", expanded=False):
     st.markdown("""
     **Aporte PF → PJ** — dinheiro que você colocou na empresa como capital próprio (investimento).
 

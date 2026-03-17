@@ -129,3 +129,38 @@ def period_comparison(
         "net_previous": previous["net"],
         "net_delta_pct": _pct_change(current["net"], previous["net"]),
     }
+
+
+def balance_history_by_account(df: pd.DataFrame) -> pd.DataFrame:
+    """Histórico de saldo acumulado por conta ao longo do tempo.
+
+    Para cada conta, computa o saldo cumulativo considerando:
+    - Entradas: transações em que a conta é destino (+amount)
+    - Saídas: transações em que a conta é origem (-amount)
+
+    Retorna DataFrame com colunas: date, account_name, balance.
+    """
+    if df.empty:
+        return pd.DataFrame(columns=["date", "account_name", "balance"])
+
+    inflow = df[["date", "destination_account", "amount"]].copy()
+    inflow = inflow.rename(columns={"destination_account": "account_name"})
+    inflow["signed"] = inflow["amount"]
+
+    outflow = df[["date", "source_account", "amount"]].copy()
+    outflow = outflow.rename(columns={"source_account": "account_name"})
+    outflow["signed"] = -outflow["amount"]
+
+    movements = pd.concat(
+        [inflow[["date", "account_name", "signed"]], outflow[["date", "account_name", "signed"]]]
+    )
+    movements["date"] = pd.to_datetime(movements["date"])
+
+    daily = (
+        movements.groupby(["account_name", "date"], as_index=False)["signed"]
+        .sum()
+        .sort_values(["account_name", "date"])
+    )
+    daily["balance"] = daily.groupby("account_name")["signed"].cumsum()
+
+    return daily[["date", "account_name", "balance"]]

@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 class ManualEntryService:
     """Persiste um único lançamento criado via formulário."""
 
-    def __init__(self, session_factory=SessionLocal) -> None:
+    def __init__(self, session_factory=SessionLocal, owner_id: int | None = None) -> None:
         self.session_factory = session_factory
+        self.owner_id = owner_id
 
     def create_transaction(self, data: ManualTransactionInput) -> None:
         """Valida referências e persiste o lançamento manual."""
@@ -33,6 +34,7 @@ class ManualEntryService:
                 destination_account_id=data.destination_account_id,
                 source_entity_id=data.source_entity_id,
                 destination_entity_id=dest_account.entity_id,
+                owner_id=self.owner_id,
             )
             session.add(tx)
             session.commit()

@@ -10,14 +10,19 @@ class BudgetRepository(BaseRepository):
     def get_by_category_and_month(
         self, category_id: int, year_month: str
     ) -> BudgetModel | None:
-        stmt = select(BudgetModel).where(
-            BudgetModel.category_id == category_id,
-            BudgetModel.year_month == year_month,
+        stmt = self._owner_filter(
+            select(BudgetModel).where(
+                BudgetModel.category_id == category_id,
+                BudgetModel.year_month == year_month,
+            ),
+            BudgetModel,
         )
         return self.session.scalar(stmt)
 
     def list_by_month(self, year_month: str) -> list[BudgetModel]:
-        stmt = select(BudgetModel).where(BudgetModel.year_month == year_month)
+        stmt = self._owner_filter(
+            select(BudgetModel).where(BudgetModel.year_month == year_month), BudgetModel
+        )
         return list(self.session.scalars(stmt))
 
     def upsert(
@@ -33,6 +38,7 @@ class BudgetRepository(BaseRepository):
             category_id=category_id,
             year_month=year_month,
             limit_amount=limit_amount,
+            owner_id=self.owner_id,
         )
         self.session.add(budget)
         self.session.flush()

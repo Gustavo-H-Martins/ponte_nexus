@@ -1,8 +1,10 @@
+from pathlib import Path
+
 import streamlit as st
 
 from app.ui import page_header
 
-st.set_page_config(page_title="Como Usar · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Como Usar · Ponte Nexus", layout="wide", page_icon="❓")
 
 page_header("Como Usar", "Guia rápido para tirar o máximo do Ponte Nexus")
 

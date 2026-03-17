@@ -22,10 +22,11 @@ _PJ_TO_PF = {"transferencia_pj_pf", "dividendos", "pro_labore"}
 
 class IngestionService:
     def __init__(
-        self, pipeline: IngestionPipeline, session_factory=SessionLocal
+        self, pipeline: IngestionPipeline, session_factory=SessionLocal, owner_id: int | None = None
     ) -> None:
         self.pipeline = pipeline
         self.session_factory = session_factory
+        self.owner_id = owner_id
 
     def ingest_upload(self, filename: str, file_bytes: bytes) -> dict[str, Any]:
         """Valida e persiste registros a partir de bytes de um arquivo enviado via UI."""
@@ -55,10 +56,10 @@ class IngestionService:
         return result
 
     def _persist(self, df: pd.DataFrame, session: Session) -> tuple[int, int]:
-        entity_repo = EntityRepository(session)
-        account_repo = AccountRepository(session)
-        category_repo = CategoryRepository(session)
-        tx_repo = TransactionRepository(session)
+        entity_repo   = EntityRepository(session, self.owner_id)
+        account_repo  = AccountRepository(session, self.owner_id)
+        category_repo = CategoryRepository(session, self.owner_id)
+        tx_repo       = TransactionRepository(session, self.owner_id)
 
         inserted = 0
         skipped = 0
@@ -109,6 +110,7 @@ class IngestionService:
                 destination_account_id=dst_account.id,
                 source_entity_id=src_entity.id,
                 destination_entity_id=dst_entity.id,
+                owner_id=self.owner_id,
             )
             tx_repo.add(tx_model)
             inserted += 1
@@ -141,5 +143,5 @@ class IngestionService:
         return src, dst
 
 
-def create_ingestion_service() -> IngestionService:
-    return IngestionService(pipeline=IngestionPipeline(), session_factory=SessionLocal)
+def create_ingestion_service(owner_id: int | None = None) -> IngestionService:
+    return IngestionService(pipeline=IngestionPipeline(), session_factory=SessionLocal, owner_id=owner_id)

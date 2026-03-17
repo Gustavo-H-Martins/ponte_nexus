@@ -4,17 +4,17 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from app.ui import page_header, plotly_layout
+from app.ui import page_header, plotly_layout, is_reader
 from src.analytics.loader import load_transactions_df
 from src.domain.enums import IncomeSourceType
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Fontes de Renda · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Fontes de Renda · Ponte Nexus", layout="wide", page_icon="�")
 
 is_dark = page_header("Fontes de Renda", "De onde vem seu dinheiro — e quanto cada fonte contribui")
 LAYOUT = plotly_layout(is_dark)
 
-_catalog = CatalogService()
+_catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
 
 _SOURCE_LABELS: dict[str, str] = {
     IncomeSourceType.SALARIO.value:      "Salário (CLT)",
@@ -30,14 +30,14 @@ _INCOME_TX_TYPES = {"receita", "pro_labore", "dividendos"}
 
 
 @st.cache_data(ttl=30)
-def _get_entities() -> list[dict]:
-    all_entities = _catalog.list_entities()
+def _get_entities(owner_id: int | None) -> list[dict]:
+    all_entities = CatalogService(owner_id=owner_id).list_entities()
     return [{"id": e.id, "name": e.name, "type": e.entity_type} for e in all_entities]
 
 
 @st.cache_data(ttl=30)
-def _get_sources() -> list[dict]:
-    sources = _catalog.list_income_sources()
+def _get_sources(owner_id: int | None) -> list[dict]:
+    sources = CatalogService(owner_id=owner_id).list_income_sources()
     return [
         {
             "id": s.id,
@@ -51,8 +51,8 @@ def _get_sources() -> list[dict]:
 
 
 @st.cache_data(ttl=30)
-def _get_data() -> pd.DataFrame:
-    return load_transactions_df()
+def _get_data(owner_id: int | None) -> pd.DataFrame:
+    return load_transactions_df(owner_id=owner_id)
 
 
 def _reload() -> None:
@@ -61,9 +61,9 @@ def _reload() -> None:
     _get_data.clear()
 
 
-entities = _get_entities()
-sources  = _get_sources()
-df_all   = _get_data()
+entities = _get_entities(st.session_state.get("effective_owner_id"))
+sources  = _get_sources(st.session_state.get("effective_owner_id"))
+df_all   = _get_data(st.session_state.get("effective_owner_id"))
 
 # ── Tabs: Gestão e Análise ─────────────────────────────────────────────────────
 tab_analysis, tab_manage = st.tabs(["📊 Análise por Fonte", "⚙️ Gerenciar Fontes"])
@@ -211,6 +211,10 @@ with tab_analysis:
 # TAB 2 — GERENCIAR FONTES
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_manage:
+    if is_reader():
+        st.info("🔒 Acesso somente leitura — você não tem permissão para adicionar ou desativar fontes de renda.")
+        st.stop()
+
     if not entities:
         st.info(
             "📭 Nenhuma entidade cadastrada. Complete o perfil inicial para continuar."

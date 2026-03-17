@@ -10,7 +10,7 @@ from src.services.catalog_service import CatalogService
 from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 st.set_page_config(
-    page_title="Painel Pessoal · Ponte Nexus", layout="wide", page_icon="💠"
+    page_title="Painel Pessoal · Ponte Nexus", layout="wide", page_icon="�"
 )
 
 _PF_INCOME_TYPES = {"pro_labore", "dividendos"}
@@ -28,19 +28,19 @@ _SOURCE_LABELS: dict[str, str] = {
 
 
 @st.cache_data(ttl=30)
-def _get_data():
-    return load_transactions_df()
+def _get_data(owner_id: int | None):
+    return load_transactions_df(owner_id=owner_id)
 
 
 @st.cache_data(ttl=30)
-def _get_entities() -> list[dict]:
-    catalog = CatalogService()
+def _get_entities(owner_id: int | None) -> list[dict]:
+    catalog = CatalogService(owner_id=owner_id)
     return [{"id": e.id, "name": e.name, "type": e.entity_type} for e in catalog.list_entities()]
 
 
 @st.cache_data(ttl=30)
-def _get_sources() -> list[dict]:
-    catalog = CatalogService()
+def _get_sources(owner_id: int | None) -> list[dict]:
+    catalog = CatalogService(owner_id=owner_id)
     return [
         {"id": s.id, "name": s.name, "source_type": s.source_type, "entity_id": s.entity_id, "is_active": s.is_active}
         for s in catalog.list_income_sources()
@@ -58,7 +58,7 @@ is_dark = page_header(
 )
 LAYOUT = plotly_layout(is_dark)
 
-df_all = _get_data()
+df_all = _get_data(st.session_state.get("effective_owner_id"))
 
 if df_all.empty:
     st.info(
@@ -413,8 +413,8 @@ with tab_remuneracao:
 # TAB 3 — FONTES DE RENDA
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_fontes:
-    entities = _get_entities()
-    sources  = _get_sources()
+    entities = _get_entities(st.session_state.get("effective_owner_id"))
+    sources  = _get_sources(st.session_state.get("effective_owner_id"))
     _INCOME_TX_TYPES = {"receita", "pro_labore", "dividendos"}
 
     subtab_analysis, subtab_manage = st.tabs(["📊 Análise por Fonte", "⚙️ Gerenciar Fontes"])
@@ -540,7 +540,7 @@ with tab_fontes:
                         (k for k, v in _SOURCE_LABELS.items() if v == source_type_label), None
                     )
                     if source_type_value:
-                        catalog_svc = CatalogService()
+                        catalog_svc = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
                         try:
                             catalog_svc.create_income_source(
                                 entity_id=entity_options[entity_label],

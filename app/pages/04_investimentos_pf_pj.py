@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from src.analytics.loader import load_transactions_df
-from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL, feather_icon
+from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 _TIPOS = {"aporte_pf_pj", "emprestimo_pf_pj"}
 
@@ -10,27 +10,27 @@ st.set_page_config(page_title="Aportes na Empresa · Ponte Nexus", layout="wide"
 
 
 @st.cache_data(ttl=30)
-def _get_data():
-    df = load_transactions_df()
+def _get_data(owner_id: int | None):
+    df = load_transactions_df(owner_id=owner_id)
     return df[df["transaction_type"].isin(_TIPOS)].copy()
 
 
 is_dark = page_header("Aportes na Empresa", "Capital que você investiu na empresa")
 LAYOUT = plotly_layout(is_dark)
 
-df = _get_data()
+df = _get_data(st.session_state.get("effective_owner_id"))
 
 if df.empty:
     st.info(
-        f"{feather_icon('message-circle', 20)} Nenhum aporte ou empréstimo da sua parte para a empresa ainda. "
+        "Nenhum aporte ou empréstimo da sua parte para a empresa ainda. "
         "Registre um aporte de capital ou empréstimo para visualizar esta página."
     )
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button(f"{feather_icon('edit-3', 18)} Registrar aporte", type="primary"):
+        if st.button("✏️ Registrar aporte", type="primary"):
             st.switch_page("pages/07_novo_lancamento.py")
     with col_b:
-        if st.button(f"{feather_icon('folder', 18)} Importar extrato"):
+        if st.button("📂 Importar extrato"):
             st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
@@ -38,11 +38,11 @@ total_aportes    = float(df.loc[df["transaction_type"] == "aporte_pf_pj",    "am
 total_emprestimos = float(df.loc[df["transaction_type"] == "emprestimo_pf_pj", "amount"].sum())
 
 col1, col2, col3 = st.columns(3)
-col1.metric(f"{feather_icon('trending-up', 18)} Aportes",          f"R$ {total_aportes:,.2f}")
-col2.metric(f"{feather_icon('credit-card', 18)} Empréstimos",       f"R$ {total_emprestimos:,.2f}")
-col3.metric(f"{feather_icon('sum', 18, '#64FFDA', 'Total')} Total Investido", f"R$ {total_aportes + total_emprestimos:,.2f}")
+col1.metric("📈 Aportes",         f"R$ {total_aportes:,.2f}")
+col2.metric("💳 Empréstimos",      f"R$ {total_emprestimos:,.2f}")
+col3.metric("∑ Total Investido",  f"R$ {total_aportes + total_emprestimos:,.2f}")
 
-with st.expander(f"{feather_icon('info', 18)} Aporte vs Empréstimo — qual a diferença?", expanded=False):
+with st.expander("ℹ️ Aporte vs Empréstimo — qual a diferença?", expanded=False):
     st.markdown("""
     **Aporte de capital** — você coloca dinheiro na empresa como investimento permanente.  
     Esse valor aumenta o patrimônio líquido da empresa e não precisa ser devolvido.

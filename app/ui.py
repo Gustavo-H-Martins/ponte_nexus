@@ -15,7 +15,7 @@ def feather_icon(name: str, size: int = 20, color: str = "#8892B0", alt: str = "
     """
     svg_path = FEATHER_ICONS_PATH / f"{name}.svg"
     if not svg_path.exists():
-        return f"<span style='color:{color};font-size:{size}px'>?</span>"
+        return ""
     svg = svg_path.read_text(encoding="utf-8")
     # Ajusta tamanho e cor
     svg = svg.replace("width=\"24\"", f"width=\"{size}\"")
@@ -256,6 +256,21 @@ def plotly_layout(is_dark: bool = True) -> dict:
         "xaxis":         {"gridcolor": "#E2E8F0", "linecolor": "#E2E8F0"},
         "yaxis":         {"gridcolor": "#E2E8F0", "linecolor": "#E2E8F0"},
     }
+
+
+def is_reader() -> bool:
+    """Retorna True se o usuário logado tem papel somente-leitura."""
+    return st.session_state.get("user_role") == "reader"
+
+
+def require_write_access() -> None:
+    """Bloqueia a página para usuários reader, exibindo mensagem e interrompendo execução."""
+    if is_reader():
+        st.warning(
+            "🔒 **Acesso somente leitura** — sua conta não tem permissão para "
+            "criar ou modificar dados. Entre em contato com um administrador."
+        )
+        st.stop()
 
 
 def page_header(title: str, subtitle: str = "") -> bool:

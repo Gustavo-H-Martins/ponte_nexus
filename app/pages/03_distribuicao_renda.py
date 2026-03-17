@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from src.analytics.loader import load_transactions_df
-from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL, feather_icon
+from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 _TIPOS_RENDA = {"pro_labore", "dividendos"}
 
@@ -10,27 +10,27 @@ st.set_page_config(page_title="Minha Remuneração · Ponte Nexus", layout="wide
 
 
 @st.cache_data(ttl=30)
-def _get_data():
-    df = load_transactions_df()
+def _get_data(owner_id: int | None):
+    df = load_transactions_df(owner_id=owner_id)
     return df[df["transaction_type"].isin(_TIPOS_RENDA)].copy()
 
 
 is_dark = page_header("Minha Remuneração", "Quanto você retirou da empresa este mês")
 LAYOUT = plotly_layout(is_dark)
 
-df = _get_data()
+df = _get_data(st.session_state.get("effective_owner_id"))
 
 if df.empty:
     st.info(
-        f"{feather_icon('message-circle', 20)} Nenhum pró-labore ou dividendo registrado ainda. "
+        "Nenhum pró-labore ou dividendo registrado ainda. "
         "Esses valores aparecem aqui quando você registra retiradas da empresa."
     )
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button(f"{feather_icon('edit-3', 18)} Registrar retirada", type="primary"):
+        if st.button("✏️ Registrar retirada", type="primary"):
             st.switch_page("pages/07_novo_lancamento.py")
     with col_b:
-        if st.button(f"{feather_icon('folder', 18)} Importar extrato"):
+        if st.button("📂 Importar extrato"):
             st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
@@ -38,11 +38,11 @@ total_pro_labore = float(df.loc[df["transaction_type"] == "pro_labore", "amount"
 total_dividendos = float(df.loc[df["transaction_type"] == "dividendos", "amount"].sum())
 
 col1, col2, col3 = st.columns(3)
-col1.metric(f"{feather_icon('briefcase', 18)} Pró-Labore",         f"R$ {total_pro_labore:,.2f}")
-col2.metric(f"{feather_icon('dollar-sign', 18)} Dividendos",         f"R$ {total_dividendos:,.2f}")
-col3.metric(f"{feather_icon('sum', 18, '#64FFDA', 'Total')} Total Distribuído", f"R$ {total_pro_labore + total_dividendos:,.2f}")
+col1.metric("💼 Pró-Labore",       f"R$ {total_pro_labore:,.2f}")
+col2.metric("💰 Dividendos",        f"R$ {total_dividendos:,.2f}")
+col3.metric("∑ Total Distribuído", f"R$ {total_pro_labore + total_dividendos:,.2f}")
 
-with st.expander(f"{feather_icon('info', 18)} Pró-labore vs Dividendos — qual a diferença?", expanded=False):
+with st.expander("ℹ️ Pró-labore vs Dividendos — qual a diferença?", expanded=False):
     st.markdown("""
     **Pró-labore** é a remuneração mensal do sócio pelo trabalho que realiza na empresa.  
     Tem incidência de INSS e IRPF. É uma despesa dedutível da empresa.

@@ -3,8 +3,7 @@ from sqlalchemy import text
 
 from src.config.database import engine
 
-_TRANSACTIONS_QUERY = text(
-    """
+_QUERY_BASE = """
     SELECT
         t.id,
         t.external_transaction_id AS transaction_id,
@@ -26,18 +25,22 @@ _TRANSACTIONS_QUERY = text(
     JOIN contas     da ON da.id = t.destination_account_id
     JOIN entidades  se ON se.id = t.source_entity_id
     JOIN entidades  de ON de.id = t.destination_entity_id
-    ORDER BY t.transaction_date DESC
-    """
-)
+"""
+
+_TRANSACTIONS_QUERY_ALL = text(_QUERY_BASE + "ORDER BY t.transaction_date DESC")
+_TRANSACTIONS_QUERY_OWNER = text(_QUERY_BASE + "WHERE t.owner_id = :owner_id ORDER BY t.transaction_date DESC")
 
 
-def load_transactions_df() -> pd.DataFrame:
-    """Carrega todas as transacoes com entidades, contas e categorias resolvidas.
+def load_transactions_df(owner_id: int | None = None) -> pd.DataFrame:
+    """Carrega transações escopadas pelo usuário (owner_id) quando informado.
 
-    Retorna DataFrame vazio com colunas tipadas quando nao ha registros.
+    Retorna DataFrame vazio com colunas tipadas quando não há registros.
     """
     with engine.connect() as conn:
-        df = pd.read_sql(_TRANSACTIONS_QUERY, conn)
+        if owner_id is not None:
+            df = pd.read_sql(_TRANSACTIONS_QUERY_OWNER, conn, params={"owner_id": owner_id})
+        else:
+            df = pd.read_sql(_TRANSACTIONS_QUERY_ALL, conn)
 
     if df.empty:
         return df

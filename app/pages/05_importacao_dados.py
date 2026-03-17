@@ -1,14 +1,16 @@
 import io
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 from src.services.ingestion_service import create_ingestion_service
-from app.ui import page_header, feather_icon
+from app.ui import page_header, require_write_access
 
 st.set_page_config(page_title="Importar Extrato · Ponte Nexus", layout="wide", page_icon="📂", initial_sidebar_state="collapsed")
 
 page_header("Importar Extrato", "Importe o extrato do seu banco ou planilha")
+require_write_access()
 
 with st.expander("\u2139\ufe0f Como preparar seu arquivo para importação", expanded=False):
     st.markdown("""
@@ -26,7 +28,7 @@ with st.expander("\u2139\ufe0f Como preparar seu arquivo para importação", exp
     _sample_path = Path(__file__).resolve().parents[2] / "data" / "samples" / "sample_valid.csv"
     if _sample_path.exists():
         st.download_button(
-            label=f"{feather_icon('download', 18)} Baixar modelo (sample_valid.csv)",
+            label="⬇️ Baixar modelo (sample_valid.csv)",
             data=_sample_path.read_bytes(),
             file_name="modelo_importacao.csv",
             mime="text/csv",
@@ -89,7 +91,7 @@ except Exception as exc:
 # Importar
 if st.button("Importar", type="primary"):
     with st.spinner("Validando e importando..."):
-        service = create_ingestion_service()
+        service = create_ingestion_service(owner_id=st.session_state.get("effective_owner_id"))
         result = service.ingest_upload(uploaded_file.name, file_bytes)
 
     if result["status"] == "failed":

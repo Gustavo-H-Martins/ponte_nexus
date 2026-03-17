@@ -1,14 +1,33 @@
+from decimal import Decimal
+
+import plotly.express as px
 import streamlit as st
 
-from app.ui import page_header
+from app.ui import page_header, is_reader, plotly_layout
+from src.analytics.kpis import balance_history_by_account
+from src.analytics.loader import load_transactions_df
 from src.domain.enums import AccountType
 from src.services.catalog_service import CatalogService
 
+
+@st.cache_data(ttl=30)
+def _get_balance_history(owner_id: int | None):
+    return balance_history_by_account(load_transactions_df(owner_id=owner_id))
+
+
+def _fmt_balance(value: Decimal, currency: str = "BRL") -> str:
+    """Formata saldo com símbolo de moeda e sinal."""
+    symbol = {"BRL": "R$", "USD": "US$", "EUR": "€"}.get(currency, currency)
+    if value >= 0:
+        return f"{symbol} {value:,.2f}"
+    return f"−{symbol} {abs(value):,.2f}"
+
 st.set_page_config(page_title="Contas · Ponte Nexus", layout="wide", page_icon="🏦")
 
-page_header("Contas Financeiras", "Gerencie suas contas bancárias, caixas e investimentos")
+is_dark = page_header("Contas Financeiras", "Gerencie suas contas bancárias, caixas e investimentos")
+LAYOUT = plotly_layout(is_dark)
 
-_catalog = CatalogService()
+_catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
 
 # ── Labels legíveis para os tipos de conta ────────────────────────────────────
 _TIPO_LABEL: dict[str, str] = {
@@ -32,25 +51,81 @@ else:
     if not exibir:
         st.info("Nenhuma conta ativa. Marque 'Mostrar contas inativas' para ver todas.")
     else:
+        # ── Painel de totais ──────────────────────────────────────────────────
+        ativas = [c for c in exibir if c["is_active"]]
+        total_brl = sum(c["balance"] for c in ativas if c["currency"] == "BRL")
+
+        col_t1, col_t2, col_t3 = st.columns(3)
+        col_t1.metric("Contas ativas", len(ativas))
+        col_t2.metric(
+            "Saldo total (BRL)",
+            _fmt_balance(total_brl),
+            delta=None,
+        )
+        saldo_neg = sum(1 for c in ativas if c["balance"] < 0)
+        col_t3.metric("Contas negativas", saldo_neg, delta_color="inverse")
+
+        st.divider()
+
         for conta in exibir:
-            status = "✅ Ativa" if conta["is_active"] else "🔒 Inativa"
-            tipo   = _TIPO_LABEL.get(conta["account_type"], conta["account_type"])
+            status  = "✅ Ativa" if conta["is_active"] else "🔒 Inativa"
+            tipo    = _TIPO_LABEL.get(conta["account_type"], conta["account_type"])
+            balance = conta["balance"]
+            balance_str = _fmt_balance(balance, conta["currency"])
+            balance_label = f"🟢 {balance_str}" if balance >= 0 else f"🔴 {balance_str}"
+
             with st.expander(
-                f"{conta['account_name']} — {conta['entity_name']} ({conta['entity_type']})  |  {tipo}  |  {status}"
+                f"{conta['account_name']} — {conta['entity_name']} ({conta['entity_type']})"
+                f"  |  {tipo}  |  {balance_label}  |  {status}"
             ):
-                col1, col2, col3 = st.columns(3)
+                col1, col2, col3, col4 = st.columns(4)
                 col1.markdown(f"**Tipo:** {tipo}")
                 col2.markdown(f"**Moeda:** {conta['currency']}")
                 col3.markdown(f"**Entidade:** {conta['entity_name']} ({conta['entity_type']})")
+                bal_color = "#4CAF50" if balance >= 0 else "#F44336"
+                col4.markdown(
+                    f"**Saldo:** <span style='color:{bal_color};font-weight:700'>{balance_str}</span>",
+                    unsafe_allow_html=True,
+                )
 
                 if conta["description"]:
                     st.caption(conta["description"])
 
-                if conta["is_active"]:
+                if conta["is_active"] and not is_reader():
                     if st.button("Desativar conta", key=f"deactivate_{conta['id']}", type="secondary"):
                         _catalog.deactivate_account(conta["id"])
                         st.toast(f"Conta '{conta['account_name']}' desativada.", icon="🔒")
                         st.rerun()
+
+st.divider()
+
+# ── Histórico de Saldo por Conta ────────────────────────────────────────────
+st.subheader("📊 Histórico de Saldo")
+
+_df_hist = _get_balance_history(st.session_state.get("effective_owner_id"))
+
+if _df_hist.empty:
+    st.info("Nenhuma movimentação encontrada. Importe ou registre transações para visualizar o histórico.")
+else:
+    _all_accounts = sorted(_df_hist["account_name"].unique().tolist())
+    _sel = st.multiselect(
+        "Contas a visualizar",
+        options=_all_accounts,
+        default=_all_accounts,
+    )
+    if _sel:
+        _df_filtered = _df_hist[_df_hist["account_name"].isin(_sel)]
+        fig_hist = px.line(
+            _df_filtered,
+            x="date",
+            y="balance",
+            color="account_name",
+            markers=True,
+            labels={"date": "Data", "balance": "Saldo (R$)", "account_name": "Conta"},
+        )
+        fig_hist.add_hline(y=0, line_dash="dot", line_color="rgba(128,128,128,0.5)")
+        fig_hist.update_layout(**LAYOUT)
+        st.plotly_chart(fig_hist, use_container_width=True)
 
 st.divider()
 

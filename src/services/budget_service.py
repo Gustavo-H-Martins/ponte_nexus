@@ -13,15 +13,16 @@ logger = logging.getLogger(__name__)
 class BudgetService:
     """Gerencia metas de gasto mensais por categoria."""
 
-    def __init__(self, session_factory=SessionLocal) -> None:
+    def __init__(self, session_factory=SessionLocal, owner_id: int | None = None) -> None:
         self.session_factory = session_factory
+        self.owner_id = owner_id
 
     def set_budget(
         self, category_id: int, year_month: str, limit_amount: Decimal
     ) -> None:
         """Define ou atualiza o limite de gasto de uma categoria no mês informado."""
         with self.session_factory() as session:
-            BudgetRepository(session).upsert(category_id, year_month, limit_amount)
+            BudgetRepository(session, self.owner_id).upsert(category_id, year_month, limit_amount)
             session.commit()
         logger.info("Orçamento definido: categoria=%d mês=%s limite=%s", category_id, year_month, limit_amount)
 
@@ -31,7 +32,7 @@ class BudgetService:
         Cada item contém: category, limit, spent, pct, status (ok/warning/danger).
         """
         with self.session_factory() as session:
-            budgets = BudgetRepository(session).list_by_month(year_month)
+            budgets = BudgetRepository(session, self.owner_id).list_by_month(year_month)
             if not budgets:
                 return []
 

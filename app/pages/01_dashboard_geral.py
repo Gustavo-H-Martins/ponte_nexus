@@ -13,7 +13,7 @@ from src.services.catalog_service import CatalogService
 st.set_page_config(page_title="Visão Geral · Ponte Nexus", layout="wide", page_icon="📊")
 def _render_onboarding() -> None:
     """Exibe wizard de configuração inicial de 4 etapas quando o banco está vazio."""
-    catalog = CatalogService()
+    catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
     existing_pf  = catalog.list_entities("PF")
     existing_pj  = catalog.list_entities("PJ")
     income_sources = catalog.list_income_sources() if existing_pf else []
@@ -38,16 +38,16 @@ def _render_onboarding() -> None:
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.markdown(f"**{step1} Seu perfil**")
+        st.markdown(f"**{step1} Seu perfil**", unsafe_allow_html=True)
         st.caption("Quem é você?")
     with col2:
-        st.markdown(f"**{step2} Sua empresa**")
+        st.markdown(f"**{step2} Sua empresa**", unsafe_allow_html=True)
         st.caption("Você tem CNPJ?")
     with col3:
-        st.markdown(f"**{step3} Fontes de renda**")
+        st.markdown(f"**{step3} Fontes de renda**", unsafe_allow_html=True)
         st.caption("De onde vem seu dinheiro?")
     with col4:
-        st.markdown(f"**{step4} Primeiro dado**")
+        st.markdown(f"**{step4} Primeiro dado**", unsafe_allow_html=True)
         st.caption("Importe ou registre")
 
     # Barra de progresso
@@ -171,25 +171,26 @@ def _render_onboarding() -> None:
 
 
 @st.cache_data(ttl=30)
-def _get_data():
-    return load_transactions_df()
+def _get_data(owner_id: int | None):
+    return load_transactions_df(owner_id=owner_id)
 
 
 @st.cache_data(ttl=30)
-def _get_flow():
-    return pf_pj_flow(load_transactions_df())
+def _get_flow(owner_id: int | None):
+    return pf_pj_flow(load_transactions_df(owner_id=owner_id))
 
 
 @st.cache_data(ttl=30)
-def _get_aportes():
-    df_all = load_transactions_df()
+def _get_aportes(owner_id: int | None):
+    df_all = load_transactions_df(owner_id=owner_id)
     return df_all[df_all["transaction_type"].isin({"aporte_pf_pj", "emprestimo_pf_pj"})].copy()
 
 
 is_dark = page_header("Visão Geral", "Como estão suas finanças este mês")
 LAYOUT = plotly_layout(is_dark)
 
-df = _get_data()
+_uid = st.session_state.get("effective_owner_id")
+df = _get_data(_uid)
 
 if df.empty:
     _render_onboarding()
@@ -371,7 +372,7 @@ with tab_resumo:
 # TAB 2 — TRANSFERÊNCIAS PF↔PJ
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_transf:
-    df_flow = _get_flow()
+    df_flow = _get_flow(_uid)
 
     if df_flow.empty:
         st.info(
@@ -467,7 +468,7 @@ with tab_transf:
 # TAB 3 — APORTES NA EMPRESA
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_aportes:
-    df_aportes = _get_aportes()
+    df_aportes = _get_aportes(_uid)
 
     if df_aportes.empty:
         st.info(

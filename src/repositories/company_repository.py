@@ -6,19 +6,23 @@ from src.repositories.base import BaseRepository
 
 class CompanyRepository(BaseRepository):
     def get_by_entity_id(self, entity_id: int) -> CompanyModel | None:
-        stmt = select(CompanyModel).where(CompanyModel.entity_id == entity_id)
+        stmt = self._owner_filter(
+            select(CompanyModel).where(CompanyModel.entity_id == entity_id), CompanyModel
+        )
         return self.session.scalar(stmt)
 
     def get_by_cnpj(self, cnpj: str) -> CompanyModel | None:
-        stmt = select(CompanyModel).where(CompanyModel.cnpj == cnpj)
+        stmt = self._owner_filter(
+            select(CompanyModel).where(CompanyModel.cnpj == cnpj), CompanyModel
+        )
         return self.session.scalar(stmt)
 
     def list_all(self) -> list[CompanyModel]:
-        stmt = select(CompanyModel).order_by(CompanyModel.cnpj)
+        stmt = self._owner_filter(select(CompanyModel).order_by(CompanyModel.cnpj), CompanyModel)
         return list(self.session.scalars(stmt))
 
     def create(self, entity_id: int, cnpj: str, company_type: str) -> CompanyModel:
-        company = CompanyModel(entity_id=entity_id, cnpj=cnpj, company_type=company_type)
+        company = CompanyModel(entity_id=entity_id, cnpj=cnpj, company_type=company_type, owner_id=self.owner_id)
         self.session.add(company)
         self.session.flush()
         return company
@@ -31,11 +35,14 @@ class CompanyRepository(BaseRepository):
 
     def list_with_entity(self) -> list[dict]:
         """Retorna empresas com nome da entidade vinculada, ordenadas por nome."""
-        rows = self.session.execute(
+        stmt = (
             select(CompanyModel, EntityModel)
             .join(EntityModel, CompanyModel.entity_id == EntityModel.id)
             .order_by(EntityModel.name)
-        ).all()
+        )
+        if self.owner_id is not None:
+            stmt = stmt.where(CompanyModel.owner_id == self.owner_id)
+        rows = self.session.execute(stmt).all()
         return [
             {
                 "id": co.id,

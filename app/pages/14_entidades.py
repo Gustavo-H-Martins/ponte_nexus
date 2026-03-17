@@ -1,6 +1,6 @@
 import streamlit as st
 
-from app.ui import page_header
+from app.ui import page_header, is_reader
 from src.domain.enums import EntityType
 from src.services.catalog_service import CatalogService
 
@@ -8,7 +8,7 @@ st.set_page_config(page_title="Entidades · Ponte Nexus", layout="wide", page_ic
 
 page_header("Entidades", "Gerencie pessoas físicas (PF) e jurídicas (PJ) cadastradas no sistema")
 
-_catalog = CatalogService()
+_catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
 
 # ── Abas por tipo de entidade ─────────────────────────────────────────────────
 aba_pj, aba_pf = st.tabs(["🏢 Pessoas Jurídicas (PJ)", "👤 Pessoas Físicas (PF)"])
@@ -35,7 +35,7 @@ with aba_pj:
                         disabled=True,
                         help=f"Esta entidade possui {n_contas} conta(s) vinculada(s). Desative ou exclua as contas antes de remover a entidade.",
                     )
-                else:
+                elif not is_reader():
                     if col2.button("Excluir", key=f"del_pj_{ent.id}", type="secondary"):
                         _catalog.delete_entity(ent.id)
                         st.toast(f"Entidade '{ent.name}' removida.", icon="🗑️")
@@ -63,7 +63,7 @@ with aba_pf:
                         disabled=True,
                         help=f"Esta entidade possui {n_contas} conta(s) vinculada(s). Desative ou exclua as contas antes de remover a entidade.",
                     )
-                else:
+                elif not is_reader():
                     if col2.button("Excluir", key=f"del_pf_{ent.id}", type="secondary"):
                         _catalog.delete_entity(ent.id)
                         st.toast(f"Entidade '{ent.name}' removida.", icon="🗑️")
@@ -72,6 +72,9 @@ with aba_pf:
 st.divider()
 
 # ── Cadastro de nova entidade ─────────────────────────────────────────────────
+if is_reader():
+    st.stop()
+
 st.subheader("Nova Entidade")
 
 with st.form("nova_entidade", clear_on_submit=True):

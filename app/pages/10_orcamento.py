@@ -2,30 +2,30 @@ from decimal import Decimal
 
 import streamlit as st
 
-from app.ui import page_header
+from app.ui import page_header, is_reader
 from src.analytics.loader import load_transactions_df
 from src.services.budget_service import BudgetService
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Orçamento · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Orçamento · Ponte Nexus", layout="wide", page_icon="🎯")
 
 page_header("Orçamento", "Defina limites de gastos por categoria e acompanhe seu progresso")
 
-_budget_svc = BudgetService()
-_catalog    = CatalogService()
+_budget_svc = BudgetService(owner_id=st.session_state.get("effective_owner_id"))
+_catalog    = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
 
 
 @st.cache_data(ttl=30)
-def _get_categories() -> list[dict]:
-    return [{"id": c.id, "name": c.name} for c in _catalog.list_categories()]
+def _get_categories(owner_id: int | None) -> list[dict]:
+    return [{"id": c.id, "name": c.name} for c in CatalogService(owner_id=owner_id).list_categories()]
 
 
 @st.cache_data(ttl=30)
-def _get_data():
-    return load_transactions_df()
+def _get_data(owner_id: int | None):
+    return load_transactions_df(owner_id=owner_id)
 
 
-categories = _get_categories()
+categories = _get_categories(st.session_state.get("effective_owner_id"))
 
 if not categories:
     st.info(
@@ -37,7 +37,7 @@ if not categories:
     st.stop()
 
 # ── Seletor de mês de referência ──────────────────────────────────────────────
-df = _get_data()
+df = _get_data(st.session_state.get("effective_owner_id"))
 import datetime
 current_month = datetime.date.today().strftime("%Y-%m")
 
@@ -61,39 +61,40 @@ selected_month = st.selectbox(
 st.divider()
 
 # ── Seção 1: Definir / atualizar meta ────────────────────────────────────────
-st.markdown('<span class="nx-section-label">Definir meta de gasto</span>', unsafe_allow_html=True)
+if not is_reader():
+    st.markdown('<span class="nx-section-label">Definir meta de gasto</span>', unsafe_allow_html=True)
 
-with st.form("form_budget"):
-    col_b1, col_b2, col_b3 = st.columns([3, 2, 1])
-    with col_b1:
-        cat_names   = [c["name"] for c in categories]
-        cat_label   = st.selectbox("Categoria", cat_names)
-        cat_sel     = next((c for c in categories if c["name"] == cat_label), None)
-    with col_b2:
-        limit_value = st.number_input(
-            "Limite mensal (R$)",
-            min_value=1.0,
-            step=50.0,
-            format="%.2f",
-            help="Valor máximo de gastos nessa categoria no mês selecionado",
-        )
-    with col_b3:
-        st.markdown("")
-        st.markdown("")
-        salvar = st.form_submit_button("💾 Salvar", type="primary")
-
-    if salvar and cat_sel:
-        try:
-            _budget_svc.set_budget(
-                category_id=cat_sel["id"],
-                year_month=selected_month,
-                limit_amount=Decimal(str(limit_value)),
+    with st.form("form_budget"):
+        col_b1, col_b2, col_b3 = st.columns([3, 2, 1])
+        with col_b1:
+            cat_names   = [c["name"] for c in categories]
+            cat_label   = st.selectbox("Categoria", cat_names)
+            cat_sel     = next((c for c in categories if c["name"] == cat_label), None)
+        with col_b2:
+            limit_value = st.number_input(
+                "Limite mensal (R$)",
+                min_value=1.0,
+                step=50.0,
+                format="%.2f",
+                help="Valor máximo de gastos nessa categoria no mês selecionado",
             )
-            st.toast(f"Meta de R$ {limit_value:,.2f} salva para '{cat_label}'!", icon="🎯")
-            st.cache_data.clear()
-            st.rerun()
-        except Exception as exc:
-            st.error(f"Erro ao salvar orçamento: {exc}")
+        with col_b3:
+            st.markdown("")
+            st.markdown("")
+            salvar = st.form_submit_button("💾 Salvar", type="primary")
+
+        if salvar and cat_sel:
+            try:
+                _budget_svc.set_budget(
+                    category_id=cat_sel["id"],
+                    year_month=selected_month,
+                    limit_amount=Decimal(str(limit_value)),
+                )
+                st.toast(f"Meta de R$ {limit_value:,.2f} salva para '{cat_label}'!", icon="🎯")
+                st.cache_data.clear()
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Erro ao salvar orçamento: {exc}")
 
 st.divider()
 

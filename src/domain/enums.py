@@ -40,8 +40,9 @@ class IncomeSourceType(str, Enum):
 
 class UserRole(str, Enum):
     """Papel do usuário no sistema."""
-    ADMIN = "admin"
-    USER  = "user"
+    ADMIN  = "admin"
+    USER   = "user"
+    READER = "reader"  # acesso somente-leitura
 
 
 class UserPlan(str, Enum):
