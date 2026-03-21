@@ -1,13 +1,32 @@
+import sys
+from pathlib import Path
+_REPO_ROOT = Path(__file__).parent.parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import streamlit as st
+from PIL import Image as _PIL_Image
 
 from src.services.auth_service import AuthService
+from app.ui import FAVICON_IMG, LOGO_PATH, render_footer
 
-st.set_page_config(page_title="Ponte Nexus · Entrar", layout="centered", page_icon="🌉")
+st.set_page_config(
+    page_title="Inside Money · Entrar",
+    layout="centered",
+    page_icon=FAVICON_IMG or "💰",
+)
 
 _auth = AuthService()
 
-st.title("🌉 Ponte Nexus")
+# Logo na página de login
+_logo_file = LOGO_PATH / "logo_imoney_light.png"
+if _logo_file.exists():
+    st.image(str(_logo_file), width=200)
+else:
+    st.title("💰 Inside Money")
 st.caption("Dashboard financeiro PF · PJ")
+
+render_footer(is_dark=False)
 
 st.divider()
 

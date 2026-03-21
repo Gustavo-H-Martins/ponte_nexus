@@ -10,7 +10,7 @@ from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL, feather_
 from app.export import generate_dashboard_pdf
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Visão Geral · Ponte Nexus", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Visão Geral · Inside Money", layout="wide", page_icon="📊")
 def _render_onboarding() -> None:
     """Exibe wizard de configuração inicial de 4 etapas quando o banco está vazio."""
     catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
@@ -30,7 +30,7 @@ def _render_onboarding() -> None:
 
     st.markdown(f"""
         <span style='vertical-align:middle;'>{feather_icon('user', 28, '#64FFDA', 'Bem-vindo')}</span>
-        <span style='font-size:1.6rem;font-weight:700;margin-left:0.5rem;'>Bem-vindo ao Ponte Nexus!</span>
+        <span style='font-size:1.6rem;font-weight:700;margin-left:0.5rem;'>Bem-vindo ao Inside Money!</span>
     """, unsafe_allow_html=True)
     st.markdown(
         "Configure seu perfil em poucos passos para começar a entender suas finanças."

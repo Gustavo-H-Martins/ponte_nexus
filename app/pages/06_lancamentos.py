@@ -5,7 +5,7 @@ from src.analytics.loader import load_transactions_df
 from app.ui import page_header, TIPO_LABEL
 from app.export import generate_excel
 
-st.set_page_config(page_title="Extrato · Ponte Nexus", layout="wide", page_icon="�")
+st.set_page_config(page_title="Extrato · Inside Money", layout="wide", page_icon="📝")
 
 
 @st.cache_data(ttl=30)

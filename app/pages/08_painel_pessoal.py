@@ -10,7 +10,7 @@ from src.services.catalog_service import CatalogService
 from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 st.set_page_config(
-    page_title="Painel Pessoal · Ponte Nexus", layout="wide", page_icon="�"
+    page_title="Painel Pessoal · Inside Money", layout="wide", page_icon="👤"
 )
 
 _PF_INCOME_TYPES = {"pro_labore", "dividendos"}

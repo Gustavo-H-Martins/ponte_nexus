@@ -1,9 +1,20 @@
-﻿"""Utilitários de UI — estilos e helpers reutilizáveis para o Ponte Nexus."""
+﻿"""Utilitários de UI — estilos e helpers reutilizáveis para o Inside Money."""
+import base64
 import streamlit as st
 from pathlib import Path
+from PIL import Image as _PIL_Image
 
 # Diretório local de SVGs Feather (ex: app/icons/feather/arrow-right.svg)
 FEATHER_ICONS_PATH = Path(__file__).parent / "icons" / "feather"
+
+# Diretório de logos da aplicação
+LOGO_PATH = Path(__file__).parent / "icons" / "logo"
+
+# Favicon pré-carregado para uso em st.set_page_config
+_favicon_file = LOGO_PATH / "favicon.png"
+FAVICON_IMG: _PIL_Image.Image | None = (
+    _PIL_Image.open(_favicon_file) if _favicon_file.exists() else None
+)
 
 def feather_icon(name: str, size: int = 20, color: str = "#8892B0", alt: str = "") -> str:
     """
@@ -213,6 +224,52 @@ hr { border-color: #E2E8F0 !important; }
 """
 
 
+@st.cache_data(show_spinner=False)
+def _b64_image(filename: str) -> str:
+    """Retorna a imagem do logo como string base64 para embed em HTML."""
+    path = LOGO_PATH / filename
+    with open(path, "rb") as fh:
+        return base64.b64encode(fh.read()).decode()
+
+
+def render_footer(is_dark: bool) -> None:
+    """Injeta rodapé fixo 'By Inside Data' no canto inferior direito da página."""
+    logo_file = "logo_data_dark.png" if is_dark else "logo_data_light.png"
+    logo_b64 = _b64_image(logo_file)
+    bg_color  = "rgba(10,25,47,0.92)"  if is_dark else "rgba(255,255,255,0.92)"
+    border    = "#1E3A5F"              if is_dark else "#E2E8F0"
+    txt_color = "#8892B0"              if is_dark else "#64748B"
+    st.markdown(
+        f"""
+        <style>
+        footer {{ visibility: hidden; }}
+        .nx-footer {{
+            position: fixed;
+            bottom: 0; right: 0; left: 0;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 24px;
+            gap: 6px;
+            font-size: 0.68rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: {txt_color};
+            background: {bg_color};
+            border-top: 1px solid {border};
+            backdrop-filter: blur(6px);
+            z-index: 99999;
+        }}
+        .nx-footer img {{ height: 16px; opacity: 0.8; vertical-align: middle; }}
+        .main .block-container {{ padding-bottom: 3rem; }}
+        </style>
+        <div class="nx-footer">
+            By&nbsp;<img src="data:image/png;base64,{logo_b64}" alt="Inside Data" />
+        </div>""",
+        unsafe_allow_html=True,
+    )
+
+
 def theme_selector() -> bool:
     """Renderiza o toggle de tema na sidebar. Retorna True para dark mode."""
     with st.sidebar:
@@ -231,10 +288,11 @@ def theme_selector() -> bool:
 
 
 def apply_theme(is_dark: bool = True) -> None:
-    """Injeta o CSS fintech (dark + overrides light se necessário)."""
+    """Injeta o CSS fintech (dark + overrides light se necessário) e o rodapé."""
     st.markdown(_CSS_BASE, unsafe_allow_html=True)
     if not is_dark:
         st.markdown(_CSS_LIGHT_OVERRIDES, unsafe_allow_html=True)
+    render_footer(is_dark)
 
 
 def plotly_layout(is_dark: bool = True) -> dict:
@@ -276,6 +334,13 @@ def require_write_access() -> None:
 def page_header(title: str, subtitle: str = "") -> bool:
     """Renderiza cabeçalho padronizado + aplica tema. Retorna is_dark."""
     is_dark = theme_selector()
+    # Logo Inside Money no topo da sidebar
+    with st.sidebar:
+        _logo_file = "logo_imoney_pill.png" if is_dark else "logo_imoney_light.png"
+        _logo_path = LOGO_PATH / _logo_file
+        if _logo_path.exists():
+            st.image(str(_logo_path), width=160)
+        st.caption("")
     apply_theme(is_dark)
     st.markdown('<div class="nx-kpi-accent"></div>', unsafe_allow_html=True)
     st.title(title)

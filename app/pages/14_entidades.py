@@ -4,7 +4,7 @@ from app.ui import page_header, is_reader
 from src.domain.enums import EntityType
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Entidades · Ponte Nexus", layout="wide", page_icon="🏢")
+st.set_page_config(page_title="Entidades · Inside Money", layout="wide", page_icon="🏢")
 
 page_header("Entidades", "Gerencie pessoas físicas (PF) e jurídicas (PJ) cadastradas no sistema")
 

@@ -9,7 +9,7 @@ from src.analytics.loader import load_transactions_df
 from src.domain.enums import IncomeSourceType
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Fontes de Renda · Ponte Nexus", layout="wide", page_icon="�")
+st.set_page_config(page_title="Fontes de Renda · Inside Money", layout="wide", page_icon="💵")
 
 is_dark = page_header("Fontes de Renda", "De onde vem seu dinheiro — e quanto cada fonte contribui")
 LAYOUT = plotly_layout(is_dark)

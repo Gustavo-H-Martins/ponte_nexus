@@ -6,7 +6,7 @@ from src.analytics.loader import load_transactions_df
 from src.analytics.pf_pj_analysis import summarize_pf_pj_direction
 from app.ui import page_header, plotly_layout, TIPO_LABEL, TYPE_COLORS
 
-st.set_page_config(page_title="Transferências · Ponte Nexus", layout="wide", page_icon="🔄")
+st.set_page_config(page_title="Transferências · Inside Money", layout="wide", page_icon="🔄")
 
 
 @st.cache_data(ttl=30)

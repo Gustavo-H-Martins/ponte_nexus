@@ -3,7 +3,7 @@ import streamlit as st
 from app.ui import page_header
 
 st.set_page_config(
-    page_title="Planos · Ponte Nexus",
+    page_title="Planos · Inside Money",
     layout="wide",
     page_icon="⭐",
 )

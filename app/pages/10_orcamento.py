@@ -7,7 +7,7 @@ from src.analytics.loader import load_transactions_df
 from src.services.budget_service import BudgetService
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Orçamento · Ponte Nexus", layout="wide", page_icon="🎯")
+st.set_page_config(page_title="Orçamento · Inside Money", layout="wide", page_icon="🎯")
 
 page_header("Orçamento", "Defina limites de gastos por categoria e acompanhe seu progresso")
 

@@ -8,8 +8,9 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 import streamlit as st
+from PIL import Image as _PIL_Image
 
-from app.ui import is_reader
+from app.ui import is_reader, FAVICON_IMG, LOGO_PATH
 from src.config.database import init_db
 from src.services.share_service import ShareService
 
@@ -20,8 +21,13 @@ if "user_id" not in st.session_state:
     st.navigation([st.Page("pages/00_login.py", title="Entrar", icon="🔑")]).run()
     st.stop()
 
-# ── Sidebar: info do usuário + logout ─────────────────────────────────────────
+# ── Sidebar: logo + info do usuário + logout ──────────────────────────────────
 with st.sidebar:
+    _is_dark_now = st.session_state.get("dark_mode", True)
+    _logo_sidebar = LOGO_PATH / ("logo_imoney_pill.png" if _is_dark_now else "logo_imoney_light.png")
+    if _logo_sidebar.exists():
+        st.image(str(_logo_sidebar), width=170)
+    st.divider()
     st.caption(f"👤 **{st.session_state.get('username', '')}**")
     st.caption(st.session_state.get("user_email", ""))
     if st.button("Sair", use_container_width=True):

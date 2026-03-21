@@ -14,7 +14,7 @@ from src.services.manual_entry_service import ManualEntryService
 from src.validation.schemas import ManualTransactionInput
 
 st.set_page_config(
-    page_title="Registrar Transação · Ponte Nexus", layout="wide", page_icon="✏️",
+    page_title="Registrar Transação · Inside Money", layout="wide", page_icon="✏️",
     initial_sidebar_state="collapsed",
 )
 

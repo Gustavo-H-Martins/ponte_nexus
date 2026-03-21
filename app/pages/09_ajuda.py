@@ -4,9 +4,9 @@ import streamlit as st
 
 from app.ui import page_header
 
-st.set_page_config(page_title="Como Usar · Ponte Nexus", layout="wide", page_icon="❓")
+st.set_page_config(page_title="Como Usar · Inside Money", layout="wide", page_icon="❓")
 
-page_header("Como Usar", "Guia rápido para tirar o máximo do Ponte Nexus")
+page_header("Como Usar", "Guia rápido para tirar o máximo do Inside Money")
 
 # ── Sumário de navegação ──────────────────────────────────────────────────────
 st.markdown("""
@@ -21,7 +21,7 @@ st.divider()
 # ── 1. Primeiros passos ────────────────────────────────────────────────────────
 st.markdown("## 🚀 Primeiros passos")
 st.markdown("""
-Quando você abre o Ponte Nexus pela primeira vez, o sistema guia você por 4 etapas:
+Quando você abre o Inside Money pela primeira vez, o sistema guia você por 4 etapas:
 
 **1. Criar seu perfil pessoal (Pessoa Física)**  
 Informe seu nome. Isso cria sua identidade no sistema para separar finanças pessoais das empresariais.

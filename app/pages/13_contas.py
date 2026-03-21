@@ -22,7 +22,7 @@ def _fmt_balance(value: Decimal, currency: str = "BRL") -> str:
         return f"{symbol} {value:,.2f}"
     return f"−{symbol} {abs(value):,.2f}"
 
-st.set_page_config(page_title="Contas · Ponte Nexus", layout="wide", page_icon="🏦")
+st.set_page_config(page_title="Contas · Inside Money", layout="wide", page_icon="🏦")
 
 is_dark = page_header("Contas Financeiras", "Gerencie suas contas bancárias, caixas e investimentos")
 LAYOUT = plotly_layout(is_dark)

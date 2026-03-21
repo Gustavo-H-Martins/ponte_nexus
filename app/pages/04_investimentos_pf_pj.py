@@ -6,7 +6,7 @@ from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 _TIPOS = {"aporte_pf_pj", "emprestimo_pf_pj"}
 
-st.set_page_config(page_title="Aportes na Empresa · Ponte Nexus", layout="wide", page_icon="📈")
+st.set_page_config(page_title="Aportes na Empresa · Inside Money", layout="wide", page_icon="📈")
 
 
 @st.cache_data(ttl=30)

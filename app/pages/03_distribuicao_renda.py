@@ -6,7 +6,7 @@ from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 _TIPOS_RENDA = {"pro_labore", "dividendos"}
 
-st.set_page_config(page_title="Minha Remuneração · Ponte Nexus", layout="wide", page_icon="💰")
+st.set_page_config(page_title="Minha Remuneração · Inside Money", layout="wide", page_icon="💰")
 
 
 @st.cache_data(ttl=30)
