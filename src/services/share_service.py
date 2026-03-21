@@ -1,7 +1,6 @@
-try:
-    import bcrypt
-except ModuleNotFoundError:  # pragma: no cover - depende do ambiente de runtime
-    bcrypt = None  # type: ignore[assignment]
+import base64
+import hashlib
+import os
 
 from src.config.database import SessionLocal
 from src.models.db_models import UserModel
@@ -9,10 +8,13 @@ from src.repositories.share_repository import ShareRepository
 from src.repositories.user_repository import UserRepository
 
 
+_PBKDF2_ITERATIONS = 480_000
+
+
 def _hash_senha(password: str) -> str:
-    if bcrypt is None:
-        raise RuntimeError("Dependencia ausente: instale 'bcrypt' para habilitar compartilhamento.")
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    salt = os.urandom(32)
+    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, _PBKDF2_ITERATIONS)
+    return base64.b64encode(salt + key).decode()
 
 
 class ShareService:

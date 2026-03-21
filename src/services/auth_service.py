@@ -1,9 +1,8 @@
+import base64
+import hashlib
+import hmac
+import os
 import re
-
-try:
-    import bcrypt
-except ModuleNotFoundError:  # pragma: no cover - depende do ambiente de runtime
-    bcrypt = None  # type: ignore[assignment]
 
 from src.config.database import SessionLocal
 from src.models.db_models import UserModel
@@ -17,16 +16,20 @@ def _validar_email(email: str) -> None:
         raise ValueError("Formato de e-mail inválido.")
 
 
+_PBKDF2_ITERATIONS = 480_000
+
+
 def _hash_senha(password: str) -> str:
-    if bcrypt is None:
-        raise RuntimeError("Dependencia ausente: instale 'bcrypt' para habilitar autenticacao.")
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    salt = os.urandom(32)
+    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, _PBKDF2_ITERATIONS)
+    return base64.b64encode(salt + key).decode()
 
 
 def _verificar_senha(password: str, password_hash: str) -> bool:
-    if bcrypt is None:
-        raise RuntimeError("Dependencia ausente: instale 'bcrypt' para habilitar autenticacao.")
-    return bcrypt.checkpw(password.encode(), password_hash.encode())
+    decoded = base64.b64decode(password_hash.encode())
+    salt, stored_key = decoded[:32], decoded[32:]
+    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, _PBKDF2_ITERATIONS)
+    return hmac.compare_digest(key, stored_key)
 
 
 def _detach_user(u: UserModel) -> UserModel:
