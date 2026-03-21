@@ -1,3 +1,12 @@
+import sys
+from pathlib import Path
+
+# Garante que a raiz do repositório esteja em sys.path independente de como
+# o Streamlit Cloud configura o ambiente (ele adiciona app/ mas não a raiz).
+_REPO_ROOT = Path(__file__).parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import streamlit as st
 
 from app.ui import is_reader
