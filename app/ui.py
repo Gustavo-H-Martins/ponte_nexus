@@ -334,13 +334,6 @@ def require_write_access() -> None:
 def page_header(title: str, subtitle: str = "") -> bool:
     """Renderiza cabeçalho padronizado + aplica tema. Retorna is_dark."""
     is_dark = theme_selector()
-    # Logo Inside Money no topo da sidebar
-    with st.sidebar:
-        _logo_file = "logo_imoney_pill.png" if is_dark else "logo_imoney_light.png"
-        _logo_path = LOGO_PATH / _logo_file
-        if _logo_path.exists():
-            st.image(str(_logo_path), width=160)
-        st.caption("")
     apply_theme(is_dark)
     st.markdown('<div class="nx-kpi-accent"></div>', unsafe_allow_html=True)
     st.title(title)
