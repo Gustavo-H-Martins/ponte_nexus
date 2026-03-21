@@ -1,10 +1,10 @@
 import streamlit as st
 
-from app.ui import page_header, is_reader
+from app.ui import FAVICON_IMG,  page_header, is_reader
 from src.domain.enums import EntityType
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Entidades · Inside Money", layout="wide", page_icon="🏢")
+st.set_page_config(page_title="Entidades · Inside Money", layout="wide", page_icon=FAVICON_IMG or "🏢")
 
 page_header("Entidades", "Gerencie pessoas físicas (PF) e jurídicas (PJ) cadastradas no sistema")
 

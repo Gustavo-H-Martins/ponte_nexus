@@ -1,9 +1,9 @@
 import streamlit as st
 
-from app.ui import page_header, require_write_access
+from app.ui import FAVICON_IMG,  page_header, require_write_access
 from src.services.share_service import ShareService
 
-st.set_page_config(page_title="Compartilhamento · Inside Money", layout="wide", page_icon="🔗")
+st.set_page_config(page_title="Compartilhamento · Inside Money", layout="wide", page_icon=FAVICON_IMG or "🔗")
 
 require_write_access()  # readers não podem acessar esta página
 

@@ -97,9 +97,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import streamlit as st
 from src.analytics.loader import load_transactions_df
-from app.ui import page_header, plotly_layout
+from app.ui import FAVICON_IMG,  page_header, plotly_layout
 
-st.set_page_config(page_title="Minha Página · Ponte Nexus", layout="wide", page_icon="💠")
+st.set_page_config(page_title="Minha Página · Ponte Nexus", layout="wide", page_icon=FAVICON_IMG or "💠")
 
 @st.cache_data(ttl=30)
 def _get_data():

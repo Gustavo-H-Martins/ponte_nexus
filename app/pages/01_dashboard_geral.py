@@ -6,11 +6,11 @@ from src.analytics.cashflow import pf_pj_flow
 from src.analytics.kpis import monthly_net_result, period_comparison, pf_pj_kpis, revenue_expense_by_month
 from src.analytics.loader import load_transactions_df
 from src.analytics.pf_pj_analysis import summarize_pf_pj_direction
-from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL, feather_icon
+from app.ui import FAVICON_IMG,  page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL, feather_icon
 from app.export import generate_dashboard_pdf
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Visão Geral · Inside Money", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Visão Geral · Inside Money", layout="wide", page_icon=FAVICON_IMG or "📊")
 def _render_onboarding() -> None:
     """Exibe wizard de configuração inicial de 4 etapas quando o banco está vazio."""
     catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))

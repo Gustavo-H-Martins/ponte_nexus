@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import streamlit as st
 
-from app.ui import TIPO_LABEL, page_header, require_write_access
+from app.ui import FAVICON_IMG,  TIPO_LABEL, page_header, require_write_access
 from src.config.database import SessionLocal, init_db
 from src.domain.enums import TransactionType
 from src.repositories.account_repository import AccountRepository
@@ -14,7 +14,7 @@ from src.services.manual_entry_service import ManualEntryService
 from src.validation.schemas import ManualTransactionInput
 
 st.set_page_config(
-    page_title="Registrar Transação · Inside Money", layout="wide", page_icon="✏️",
+    page_title="Registrar Transação · Inside Money", layout="wide", page_icon=FAVICON_IMG or "✏️",
     initial_sidebar_state="collapsed",
 )
 

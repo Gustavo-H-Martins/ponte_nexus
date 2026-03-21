@@ -2,12 +2,12 @@ from decimal import Decimal
 
 import streamlit as st
 
-from app.ui import page_header, is_reader
+from app.ui import FAVICON_IMG,  page_header, is_reader
 from src.analytics.loader import load_transactions_df
 from src.services.budget_service import BudgetService
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Orçamento · Inside Money", layout="wide", page_icon="🎯")
+st.set_page_config(page_title="Orçamento · Inside Money", layout="wide", page_icon=FAVICON_IMG or "🎯")
 
 page_header("Orçamento", "Defina limites de gastos por categoria e acompanhe seu progresso")
 

@@ -7,10 +7,10 @@ from src.analytics.kpis import top_expense_categories
 from src.analytics.loader import load_transactions_df
 from src.domain.enums import IncomeSourceType
 from src.services.catalog_service import CatalogService
-from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
+from app.ui import FAVICON_IMG,  page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 st.set_page_config(
-    page_title="Painel Pessoal · Inside Money", layout="wide", page_icon="👤"
+    page_title="Painel Pessoal · Inside Money", layout="wide", page_icon=FAVICON_IMG or "👤"
 )
 
 _PF_INCOME_TYPES = {"pro_labore", "dividendos"}

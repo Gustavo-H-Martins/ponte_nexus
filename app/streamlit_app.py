@@ -21,13 +21,30 @@ if "user_id" not in st.session_state:
     st.navigation([st.Page("pages/00_login.py", title="Entrar", icon="🔑")]).run()
     st.stop()
 
-# ── Sidebar: logo + info do usuário + logout ──────────────────────────────────
+# ── Logo fixo acima do menu de navegação (st.logo prega no topo da sidebar) ──
+_is_dark_now = st.session_state.get("dark_mode", True)
+_logo_light = str(LOGO_PATH / "logo_imoney_light.png")
+_logo_dark  = str(LOGO_PATH / "logo_imoney_pill.png")
+st.logo(
+    image=_logo_dark if _is_dark_now else _logo_light,
+    size="large",
+)
+# Sobrepõe o tamanho máximo imposto pelo Streamlit ao st.logo()
+st.markdown(
+    """
+    <style>
+    [data-testid="stLogoImage"] {
+        width: 180px !important;
+        max-width: 180px !important;
+        height: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ── Sidebar: info do usuário + logout ─────────────────────────────────────────
 with st.sidebar:
-    _is_dark_now = st.session_state.get("dark_mode", True)
-    _logo_sidebar = LOGO_PATH / ("logo_imoney_pill.png" if _is_dark_now else "logo_imoney_light.png")
-    if _logo_sidebar.exists():
-        st.image(str(_logo_sidebar), width=170)
-    st.divider()
     st.caption(f"👤 **{st.session_state.get('username', '')}**")
     st.caption(st.session_state.get("user_email", ""))
     if st.button("Sair", use_container_width=True):

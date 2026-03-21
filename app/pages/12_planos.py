@@ -1,11 +1,11 @@
 import streamlit as st
 
-from app.ui import page_header
+from app.ui import FAVICON_IMG,  page_header
 
 st.set_page_config(
     page_title="Planos · Inside Money",
     layout="wide",
-    page_icon="⭐",
+    page_icon=FAVICON_IMG or "⭐",
 )
 
 page_header(

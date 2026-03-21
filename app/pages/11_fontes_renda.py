@@ -4,12 +4,12 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from app.ui import page_header, plotly_layout, is_reader
+from app.ui import FAVICON_IMG,  page_header, plotly_layout, is_reader
 from src.analytics.loader import load_transactions_df
 from src.domain.enums import IncomeSourceType
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Fontes de Renda · Inside Money", layout="wide", page_icon="💵")
+st.set_page_config(page_title="Fontes de Renda · Inside Money", layout="wide", page_icon=FAVICON_IMG or "💵")
 
 is_dark = page_header("Fontes de Renda", "De onde vem seu dinheiro — e quanto cada fonte contribui")
 LAYOUT = plotly_layout(is_dark)

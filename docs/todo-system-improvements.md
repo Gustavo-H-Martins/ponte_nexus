@@ -71,7 +71,7 @@ Todos os dados são globais — qualquer pessoa com acesso à URL vê e edita tu
 |---------|-----|-----------|
 | `app/pages/01_dashboard_geral.py` | `st.set_page_config` duplicado | ✅ |
 | `app/pages/01_dashboard_geral.py` | `feather_icon` usada antes do import local | ✅ |
-| `app/pages/02_fluxo_pf_pj.py` | `page_icon=feather_icon(...)` — SVG inválido no Streamlit | ✅ |
+| `app/pages/02_fluxo_pf_pj.py` | `page_icon=FAVICON_IMG or feather_icon(...)` — SVG inválido no Streamlit | ✅ |
 | `app/pages/03_distribuicao_renda.py` | Idem | ✅ |
 | `app/pages/04_investimentos_pf_pj.py` | Idem | ✅ |
 | `app/pages/05_importacao_dados.py` | Idem | ✅ |
@@ -229,7 +229,7 @@ class UserReaderAccessModel(Base):
 
 | ID   | Descrição | Motivo | Impacto | Status |
 |------|-----------|--------|---------|--------|
-| C-01 | Corrigir `page_icon=feather_icon(...)` em todas as páginas | SVG inválido no Streamlit | App quebra ao navegar | ✅ Concluído |
+| C-01 | Corrigir `page_icon=FAVICON_IMG or feather_icon(...)` em todas as páginas | SVG inválido no Streamlit | App quebra ao navegar | ✅ Concluído |
 | C-02 | Remover `set_page_config` duplicado em `01_dashboard_geral.py` | Streamlit permite apenas uma chamada | Erro de runtime | ✅ Concluído |
 | C-03 | Corrigir import de `feather_icon` antes do uso em `01_dashboard_geral.py` | `NameError` ao carregar onboarding | App quebra | ✅ Concluído |
 | C-04 | Configurar Alembic para migrações de schema | `create_all()` em produção pode destruir dados | Perda de dados em atualização | ⏳ Pendente |

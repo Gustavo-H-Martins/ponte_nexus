@@ -2,11 +2,11 @@ import streamlit as st
 import plotly.express as px
 
 from src.analytics.loader import load_transactions_df
-from app.ui import page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
+from app.ui import FAVICON_IMG,  page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 _TIPOS_RENDA = {"pro_labore", "dividendos"}
 
-st.set_page_config(page_title="Minha Remuneração · Inside Money", layout="wide", page_icon="💰")
+st.set_page_config(page_title="Minha Remuneração · Inside Money", layout="wide", page_icon=FAVICON_IMG or "💰")
 
 
 @st.cache_data(ttl=30)

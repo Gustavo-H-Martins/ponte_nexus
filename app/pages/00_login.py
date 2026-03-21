@@ -18,7 +18,22 @@ st.set_page_config(
 
 _auth = AuthService()
 
-# Logo na página de login
+# Logo fixo no topo da sidebar via st.logo
+st.logo(str(LOGO_PATH / "logo_imoney_light.png"), size="large")
+st.markdown(
+    """
+    <style>
+    [data-testid="stLogoImage"] {
+        width: 180px !important;
+        max-width: 180px !important;
+        height: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Logo central na área de conteúdo da página de login
 _logo_file = LOGO_PATH / "logo_imoney_light.png"
 if _logo_file.exists():
     st.image(str(_logo_file), width=200)

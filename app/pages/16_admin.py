@@ -1,10 +1,10 @@
 import streamlit as st
 
-from app.ui import page_header
+from app.ui import FAVICON_IMG,  page_header
 from src.config.database import SessionLocal
 from src.repositories.user_repository import UserRepository
 
-st.set_page_config(page_title="Admin · Inside Money", layout="wide", page_icon="🛡️")
+st.set_page_config(page_title="Admin · Inside Money", layout="wide", page_icon=FAVICON_IMG or "🛡️")
 
 # ── Guard: somente admins ─────────────────────────────────────────────────────
 if st.session_state.get("user_role") != "admin":

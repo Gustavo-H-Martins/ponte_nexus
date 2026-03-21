@@ -3,7 +3,7 @@ from decimal import Decimal
 import plotly.express as px
 import streamlit as st
 
-from app.ui import page_header, is_reader, plotly_layout
+from app.ui import FAVICON_IMG,  page_header, is_reader, plotly_layout
 from src.analytics.kpis import balance_history_by_account
 from src.analytics.loader import load_transactions_df
 from src.domain.enums import AccountType
@@ -22,7 +22,7 @@ def _fmt_balance(value: Decimal, currency: str = "BRL") -> str:
         return f"{symbol} {value:,.2f}"
     return f"−{symbol} {abs(value):,.2f}"
 
-st.set_page_config(page_title="Contas · Inside Money", layout="wide", page_icon="🏦")
+st.set_page_config(page_title="Contas · Inside Money", layout="wide", page_icon=FAVICON_IMG or "🏦")
 
 is_dark = page_header("Contas Financeiras", "Gerencie suas contas bancárias, caixas e investimentos")
 LAYOUT = plotly_layout(is_dark)
