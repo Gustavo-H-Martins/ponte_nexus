@@ -1,6 +1,9 @@
 import re
 
-import bcrypt
+try:
+    import bcrypt
+except ModuleNotFoundError:  # pragma: no cover - depende do ambiente de runtime
+    bcrypt = None  # type: ignore[assignment]
 
 from src.config.database import SessionLocal
 from src.models.db_models import UserModel
@@ -15,10 +18,14 @@ def _validar_email(email: str) -> None:
 
 
 def _hash_senha(password: str) -> str:
+    if bcrypt is None:
+        raise RuntimeError("Dependencia ausente: instale 'bcrypt' para habilitar autenticacao.")
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def _verificar_senha(password: str, password_hash: str) -> bool:
+    if bcrypt is None:
+        raise RuntimeError("Dependencia ausente: instale 'bcrypt' para habilitar autenticacao.")
     return bcrypt.checkpw(password.encode(), password_hash.encode())
 
 
