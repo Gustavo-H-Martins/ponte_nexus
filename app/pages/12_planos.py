@@ -91,7 +91,7 @@ col_free, col_pro, col_business = st.columns(3, gap="large")
 _SPACER = '<div style="height:2.1rem"></div>'
 
 with col_free:
-    _badge_free = '<div class="nx-plan-badge-atual">⭐ Seu plano atual</div>' if _current_plan == "free" else _SPACER
+    _badge_free = '<div class="nx-plan-badge-atual">Seu plano atual</div>' if _current_plan == "free" else _SPACER
     _class_free = "nx-plan-card atual" if _current_plan == "free" else "nx-plan-card"
     st.markdown(
         f"""
@@ -117,7 +117,7 @@ with col_free:
     )
 
 with col_pro:
-    _badge_pro = '<div class="nx-plan-badge-atual">⭐ Seu plano atual</div>' if _current_plan == "pro" else '<div class="nx-plan-badge">Mais popular</div>'
+    _badge_pro = '<div class="nx-plan-badge-atual">Seu plano atual</div>' if _current_plan == "pro" else '<div class="nx-plan-badge">Mais popular</div>'
     _class_pro = "nx-plan-card atual" if _current_plan == "pro" else "nx-plan-card destacado"
     st.markdown(
         f"""
@@ -143,7 +143,7 @@ with col_pro:
     )
 
 with col_business:
-    _badge_biz = '<div class="nx-plan-badge-atual">⭐ Seu plano atual</div>' if _current_plan == "business" else _SPACER
+    _badge_biz = '<div class="nx-plan-badge-atual">Seu plano atual</div>' if _current_plan == "business" else _SPACER
     _class_biz = "nx-plan-card atual" if _current_plan == "business" else "nx-plan-card"
     st.markdown(
         f"""
@@ -180,7 +180,7 @@ st.caption(
     "Após o pagamento, envie o comprovante por WhatsApp ou e-mail para ativar seu plano."
 )
 
-tab_pro_pix, tab_biz_pix = st.tabs(["⚡ Plano Pro — R$ 29/mês", "🚀 Plano Business — R$ 79/mês"])
+tab_pro_pix, tab_biz_pix = st.tabs(["Plano Pro — R$ 29/mês", "Plano Business — R$ 79/mês"])
 
 with tab_pro_pix:
     col_info, col_code = st.columns([1, 2], gap="large")
@@ -210,22 +210,21 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 # ── Envio de comprovante ───────────────────────────────────────────────────────
 st.info(
-    "📲 Após o pagamento, envie o **comprovante** com seu **e-mail de cadastro** "
+    "Após o pagamento, envie o **comprovante** com seu **e-mail de cadastro** "
     "por WhatsApp ou e-mail para ativarmos seu plano em até 1 hora útil.",
-    icon="💡",
 )
 
 col_wp, col_em, _ = st.columns([2, 2, 4])
 with col_wp:
     st.link_button(
-        "💬 Enviar comprovante via WhatsApp",
+        "Enviar comprovante via WhatsApp",
         url="https://wa.me/5531982273761?text=Ol%C3%A1%2C%20realizei%20o%20pagamento%20do%20Ponte%20Nexus%20e%20quero%20ativar%20meu%20plano.",
         use_container_width=True,
         type="primary",
     )
 with col_em:
     st.link_button(
-        "✉️ Enviar por e-mail",
+        "Enviar por e-mail",
         url="mailto:contato@pontenexus.com.br?subject=Comprovante%20Ponte%20Nexus",
         use_container_width=True,
     )
@@ -233,7 +232,7 @@ with col_em:
 st.divider()
 
 # ── Perguntas frequentes sobre planos ──────────────────────────────────────────
-st.markdown("## ❓ Dúvidas sobre os planos")
+st.markdown("## Dúvidas sobre os planos")
 
 with st.expander("Posso cancelar a qualquer momento?"):
     st.markdown("""

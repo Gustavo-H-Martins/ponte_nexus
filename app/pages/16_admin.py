@@ -8,7 +8,7 @@ st.set_page_config(page_title="Admin · Inside Money", layout="wide", page_icon=
 
 # ── Guard: somente admins ─────────────────────────────────────────────────────
 if st.session_state.get("user_role") != "admin":
-    st.error("🔒 Acesso restrito a administradores.")
+    st.error("Acesso restrito a administradores.")
     st.stop()
 
 page_header("Painel Administrativo", "Gerencie usuários, planos e permissões")
@@ -130,7 +130,7 @@ else:
                         repo.update_role(u["id"], new_role)
                     session.commit()
                 _load_users.clear()
-                st.toast(f"Usuário '{u['email']}' atualizado.", icon="✅")
+                st.toast(f"Usuário '{u['email']}' atualizado.")
                 st.rerun()
 
             if do_toggle:
@@ -139,5 +139,5 @@ else:
                     repo.toggle_active(u["id"])
                     session.commit()
                 _load_users.clear()
-                st.toast(f"Conta '{u['email']}' {'desativada' if u['is_active'] else 'reativada'}.", icon="🔄")
+                st.toast(f"Conta '{u['email']}' {'desativada' if u['is_active'] else 'reativada'}.")
                 st.rerun()

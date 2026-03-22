@@ -21,10 +21,10 @@ if df.empty:
     st.info("Nenhuma transação cadastrada ainda. Comece registrando ou importando seu extrato.")
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button("✏️ Registrar transação", type="primary"):
+        if st.button("Registrar transação", type="primary"):
             st.switch_page("pages/07_novo_lancamento.py")
     with col_b:
-        if st.button("📂 Importar extrato"):
+        if st.button("Importar extrato"):
             st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 
@@ -85,7 +85,7 @@ _saldo     = _total_in - _total_out
 _sm1, _sm2, _sm3 = st.columns(3)
 _sm1.metric("↑ Entradas", f"R$ {_total_in:,.2f}")
 _sm2.metric("↓ Saídas",   f"R$ {_total_out:,.2f}")
-_sm3.metric("⚖️ Saldo",   f"R$ {_saldo:,.2f}")
+_sm3.metric("Saldo",   f"R$ {_saldo:,.2f}")
 
 # ── Tabela completa ────────────────────────────────────────────────────────────
 _COL_MAP = {
@@ -112,7 +112,7 @@ st.dataframe(display_df, use_container_width=True, hide_index=True)
 
 excel_bytes = generate_excel(display_df)
 st.download_button(
-    label="📊 Exportar Excel",
+    label="Exportar Excel",
     data=excel_bytes,
     file_name="lancamentos.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

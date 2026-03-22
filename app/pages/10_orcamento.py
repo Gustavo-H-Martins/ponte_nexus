@@ -29,10 +29,10 @@ categories = _get_categories(st.session_state.get("effective_owner_id"))
 
 if not categories:
     st.info(
-        "📭 Nenhuma categoria cadastrada ainda. "
-        "Crie categorias em **Registrar Transação → ⚙️ Configurações** antes de definir orçamentos."
+        "Nenhuma categoria cadastrada ainda. "
+        "Crie categorias em **Registrar Transação → Configurações** antes de definir orçamentos."
     )
-    if st.button("✏️ Ir para Configurações", type="primary"):
+    if st.button("Ir para Configurações", type="primary"):
         st.switch_page("pages/07_novo_lancamento.py")
     st.stop()
 
@@ -90,7 +90,7 @@ if not is_reader():
                     year_month=selected_month,
                     limit_amount=Decimal(str(limit_value)),
                 )
-                st.toast(f"Meta de R$ {limit_value:,.2f} salva para '{cat_label}'!", icon="🎯")
+                st.toast(f"Meta de R$ {limit_value:,.2f} salva para '{cat_label}'!")
                 st.cache_data.clear()
                 st.rerun()
             except Exception as exc:
@@ -105,7 +105,7 @@ utilization = _budget_svc.get_utilization(df, selected_month)
 
 if not utilization:
     st.info(
-        f"📭 Nenhum orçamento definido para {selected_month}. "
+        f"Nenhum orçamento definido para {selected_month}. "
         "Use o formulário acima para criar sua primeira meta de gasto."
     )
     st.stop()
@@ -146,10 +146,10 @@ total_spent = sum(i["spent"]  for i in utilization)
 over_budget = [i for i in utilization if i["status"] == "danger"]
 
 c1, c2, c3 = st.columns(3)
-c1.metric("💰 Total orçado", f"R$ {total_limit:,.2f}")
-c2.metric("📉 Total gasto",  f"R$ {total_spent:,.2f}")
+c1.metric("Total orçado", f"R$ {total_limit:,.2f}")
+c2.metric("Total gasto",  f"R$ {total_spent:,.2f}")
 c3.metric(
-    "⚖️ Saldo disponível",
+    "Saldo disponível",
     f"R$ {total_limit - total_spent:,.2f}",
     delta=f"{(total_spent / total_limit * 100):.0f}% utilizado" if total_limit > 0 else None,
     delta_color="inverse",
@@ -158,11 +158,11 @@ c3.metric(
 if over_budget:
     cats_over = ", ".join(i["category"] for i in over_budget)
     st.warning(
-        f"⚠️ {len(over_budget)} categoria(s) ultrapassaram o limite: **{cats_over}**. "
+        f"{len(over_budget)} categoria(s) ultrapassaram o limite: **{cats_over}**. "
         "Revise seus gastos ou ajuste as metas."
     )
 
-with st.expander("ℹ️ Como interpretar as cores?", expanded=False):
+with st.expander("Como interpretar as cores?", expanded=False):
     st.markdown("""
     🟢 **Verde** — gastos dentro do limite (abaixo de 70%)
 

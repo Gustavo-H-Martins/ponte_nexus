@@ -65,7 +65,7 @@ def _render_onboarding() -> None:
             if st.form_submit_button("Criar meu perfil", type="primary") and nome.strip():
                 try:
                     catalog.create_entity(nome.strip(), "PF")
-                    st.toast(f"Perfil '{nome.strip()}' criado!", icon="👤")
+                    st.toast(f"Perfil '{nome.strip()}' criado!")
                     st.rerun()
                 except ValueError as exc:
                     st.error(str(exc))
@@ -89,7 +89,7 @@ def _render_onboarding() -> None:
             if criar and nome_empresa.strip():
                 try:
                     catalog.create_entity(nome_empresa.strip(), "PJ")
-                    st.toast(f"Empresa '{nome_empresa.strip()}' criada!", icon="🏢")
+                    st.toast(f"Empresa '{nome_empresa.strip()}' criada!")
                     st.rerun()
                 except ValueError as exc:
                     st.error(str(exc))
@@ -146,7 +146,7 @@ def _render_onboarding() -> None:
                         source_type=source_type_value.value,
                         expected_monthly_amount=Decimal(str(expected)) if expected > 0 else None,
                     )
-                    st.toast(f"Fonte '{source_name.strip()}' adicionada!", icon="🌱")
+                    st.toast(f"Fonte '{source_name.strip()}' adicionada!")
                     st.rerun()
                 except Exception as exc:
                     st.error(str(exc))
@@ -163,10 +163,10 @@ def _render_onboarding() -> None:
     )
     col_p1, col_p2, _ = st.columns([2, 2, 4])
     with col_p1:
-        if st.button("📂 Importar extrato", type="primary"):
+        if st.button("Importar extrato", type="primary"):
             st.switch_page("pages/05_importacao_dados.py")
     with col_p2:
-        if st.button("✏️ Registrar transação"):
+        if st.button("Registrar transação"):
             st.switch_page("pages/07_novo_lancamento.py")
 
 
@@ -198,7 +198,7 @@ if df.empty:
 
 # ── Tabs principais ───────────────────────────────────────────────────────────
 tab_resumo, tab_transf, tab_aportes = st.tabs(
-    ["📊 Resumo Financeiro", "🔄 Transferências PF↔PJ", "📈 Aportes na Empresa"]
+    ["Resumo Financeiro", "Transferências PF↔PJ", "Aportes na Empresa"]
 )
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -223,11 +223,11 @@ with tab_resumo:
         return f"{pct:+.1f}% vs {_months[-2]}"
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("💼 Total recebido pela PJ",  f"R$ {kpis['pj_income']:,.2f}", delta=_delta("income_delta_pct"))
-    c2.metric("👤 Total recebido pela PF",  f"R$ {kpis['pf_income']:,.2f}")
-    c3.metric("📉 Total de despesas",       f"R$ {kpis['expenses']:,.2f}", delta=_delta("expense_delta_pct", invert=True), delta_color="inverse")
+    c1.metric("Total recebido pela PJ",  f"R$ {kpis['pj_income']:,.2f}", delta=_delta("income_delta_pct"))
+    c2.metric("Total recebido pela PF",  f"R$ {kpis['pf_income']:,.2f}")
+    c3.metric("Total de despesas",       f"R$ {kpis['expenses']:,.2f}", delta=_delta("expense_delta_pct", invert=True), delta_color="inverse")
     c4.metric(
-        "⚖️ Saldo do período",
+        "Saldo do período",
         f"R$ {kpis['balance']:,.2f}",
         delta=_delta("net_delta_pct"),
         delta_color="normal",
@@ -376,15 +376,15 @@ with tab_transf:
 
     if df_flow.empty:
         st.info(
-            "💭 Nenhum fluxo entre você e sua empresa ainda. "
+            "Nenhum fluxo entre você e sua empresa ainda. "
             "Registre uma transferência, aporte ou distribuição de dividendos para visualizar esta aba."
         )
         col_a, col_b, _ = st.columns([2, 2, 4])
         with col_a:
-            if st.button("✏️ Registrar transação", type="primary", key="transf_reg"):
+            if st.button("Registrar transação", type="primary", key="transf_reg"):
                 st.switch_page("pages/07_novo_lancamento.py")
         with col_b:
-            if st.button("📂 Importar extrato", key="transf_imp"):
+            if st.button("Importar extrato", key="transf_imp"):
                 st.switch_page("pages/05_importacao_dados.py")
     else:
         summary = summarize_pf_pj_direction(df_flow)
@@ -392,11 +392,11 @@ with tab_transf:
         pj_to_pf = float(summary.loc[summary["direction"] == "pj_to_pf", "amount"].values[0])
 
         tc1, tc2, tc3 = st.columns(3)
-        tc1.metric("👤→🏢 PF → PJ (aportes / empréstimos)", f"R$ {pf_to_pj:,.2f}")
-        tc2.metric("🏢→👤 PJ → PF (retiradas / dividendos)", f"R$ {pj_to_pf:,.2f}")
+        tc1.metric("PF → PJ (aportes / empréstimos)", f"R$ {pf_to_pj:,.2f}")
+        tc2.metric("PJ → PF (retiradas / dividendos)", f"R$ {pj_to_pf:,.2f}")
         tc3.metric("Saldo retornado à PF", f"R$ {pj_to_pf - pf_to_pj:,.2f}")
 
-        with st.expander("ℹ️ O que significam esses tipos de fluxo?", expanded=False):
+        with st.expander("O que significam esses tipos de fluxo?", expanded=False):
             st.markdown("""
             **Aporte PF → PJ** — dinheiro que você colocou na empresa como capital próprio (investimento).
 
@@ -472,26 +472,26 @@ with tab_aportes:
 
     if df_aportes.empty:
         st.info(
-            "💭 Nenhum aporte ou empréstimo da sua parte para a empresa ainda. "
+            "Nenhum aporte ou empréstimo da sua parte para a empresa ainda. "
             "Registre um aporte de capital ou empréstimo para visualizar esta aba."
         )
         col_a, col_b, _ = st.columns([2, 2, 4])
         with col_a:
-            if st.button("✏️ Registrar aporte", type="primary", key="ap_reg"):
+            if st.button("Registrar aporte", type="primary", key="ap_reg"):
                 st.switch_page("pages/07_novo_lancamento.py")
         with col_b:
-            if st.button("📂 Importar extrato", key="ap_imp"):
+            if st.button("Importar extrato", key="ap_imp"):
                 st.switch_page("pages/05_importacao_dados.py")
     else:
         total_aportes     = float(df_aportes.loc[df_aportes["transaction_type"] == "aporte_pf_pj",    "amount"].sum())
         total_emprestimos = float(df_aportes.loc[df_aportes["transaction_type"] == "emprestimo_pf_pj", "amount"].sum())
 
         ac1, ac2, ac3 = st.columns(3)
-        ac1.metric("📊 Aportes",          f"R$ {total_aportes:,.2f}")
-        ac2.metric("🏦 Empréstimos",       f"R$ {total_emprestimos:,.2f}")
-        ac3.metric("∑ Total Investido", f"R$ {total_aportes + total_emprestimos:,.2f}")
+        ac1.metric("Aportes",          f"R$ {total_aportes:,.2f}")
+        ac2.metric("Empréstimos",       f"R$ {total_emprestimos:,.2f}")
+        ac3.metric("Total Investido", f"R$ {total_aportes + total_emprestimos:,.2f}")
 
-        with st.expander("ℹ️ Aporte vs Empréstimo — qual a diferença?", expanded=False):
+        with st.expander("Aporte vs Empréstimo — qual a diferença?", expanded=False):
             st.markdown("""
             **Aporte de capital** — você coloca dinheiro na empresa como investimento permanente.
             Esse valor aumenta o patrimônio líquido da empresa e não precisa ser devolvido.

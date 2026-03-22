@@ -90,7 +90,7 @@ _COMPANY_TYPES = {
 }
 
 # ── Tabs principais ────────────────────────────────────────────────────────────
-tab_form, tab_config = st.tabs(["💰 Lançamento de Transação", "⚙️ Configurações"])
+tab_form, tab_config = st.tabs(["Lançamento de Transação", "Configurações"])
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -113,7 +113,7 @@ with tab_form:
         if not categories:
             missing.append("categorias")
         st.warning(
-            f"⚠️ Cadastre {', '.join(missing)} na aba **⚙️ Configurações** antes de "
+            f"Cadastre {', '.join(missing)} na aba **Configurações** antes de "
             "registrar um lançamento."
         )
 
@@ -246,8 +246,8 @@ with tab_form:
             # ── Botões ────────────────────────────────────────────────────────
             st.markdown("")
             btn_save, btn_cancel, _ = st.columns([2, 1, 3])
-            submit = btn_save.button("✅ Salvar lançamento", type="primary")
-            cancel = btn_cancel.button("↩️ Cancelar")
+            submit = btn_save.button("Salvar lançamento", type="primary")
+            cancel = btn_cancel.button("Cancelar")
 
             if cancel:
                 st.session_state["fv"] = fv + 1
@@ -288,8 +288,7 @@ with tab_form:
                         _entry.create_transaction(data)
                         tipo_label = _TX_LABELS.get(tx_type_value, tx_type_value)
                         st.toast(
-                            f"✅ {tipo_label} de R$ {amount:,.2f} em {cat_label} registrada!",
-                            icon="✅",
+                            f"{tipo_label} de R$ {amount:,.2f} em {cat_label} registrada!",
                         )
                         _reload_all()
                         st.session_state["fv"] = fv + 1
@@ -418,7 +417,7 @@ with tab_form:
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_config:
     cfg_cat, cfg_acc, cfg_ent, cfg_emp = st.tabs(
-        ["📂 Categorias", "🏦 Contas", "👤 Entidades", "🏢 Empresas (CNPJ)"]
+        ["Categorias", "Contas", "Entidades", "Empresas (CNPJ)"]
     )
 
     # ── Categorias ────────────────────────────────────────────────────────────
@@ -450,7 +449,7 @@ with tab_config:
                 new_cat_group = st.text_input(
                     "Grupo", value="geral", placeholder="ex: pessoal, empresa"
                 )
-                if st.form_submit_button("➕ Adicionar categoria", type="primary"):
+                if st.form_submit_button("Adicionar categoria", type="primary"):
                     if new_cat_name.strip():
                         try:
                             _catalog.create_category(
@@ -471,7 +470,7 @@ with tab_config:
                 cat_del_name = st.selectbox(
                     "Selecione a categoria", list(cat_del_opts.keys()), key="del_cat_sel"
                 )
-                if st.button("🗑️ Remover categoria", key="btn_del_cat"):
+                if st.button("Remover categoria", key="btn_del_cat"):
                     try:
                         _catalog.delete_category(cat_del_opts[cat_del_name])
                         st.success(f"Categoria **{cat_del_name}** removida.")
@@ -516,7 +515,7 @@ with tab_config:
             with st.form("form_add_acc", clear_on_submit=True):
                 if not entities_for_acc:
                     st.warning("Cadastre uma entidade primeiro.")
-                    st.form_submit_button("➕ Adicionar conta", disabled=True)
+                    st.form_submit_button("Adicionar conta", disabled=True)
                 else:
                     acc_entity_labels = [
                         f"{e['name']} ({e['entity_type']})" for e in entities_for_acc
@@ -534,7 +533,7 @@ with tab_config:
                         "Nome da conta", placeholder="ex: Conta Corrente, Carteira"
                     )
                     new_acc_currency = st.selectbox("Moeda", ["BRL", "USD", "EUR"])
-                    if st.form_submit_button("➕ Adicionar conta", type="primary"):
+                    if st.form_submit_button("Adicionar conta", type="primary"):
                         if new_acc_name.strip() and acc_entity:
                             try:
                                 _catalog.create_account(
@@ -559,7 +558,7 @@ with tab_config:
                 acc_del_label = st.selectbox(
                     "Selecione a conta", list(acc_del_opts.keys()), key="del_acc_sel"
                 )
-                if st.button("🗑️ Remover conta", key="btn_del_acc"):
+                if st.button("Remover conta", key="btn_del_acc"):
                     try:
                         _catalog.delete_account(acc_del_opts[acc_del_label])
                         st.success(f"Conta **{acc_del_label}** removida.")
@@ -597,7 +596,7 @@ with tab_config:
             with st.form("form_add_ent", clear_on_submit=True):
                 new_ent_name = st.text_input("Nome da entidade", placeholder="ex: João Silva")
                 new_ent_type = st.selectbox("Tipo", ["PF", "PJ"])
-                if st.form_submit_button("➕ Adicionar entidade", type="primary"):
+                if st.form_submit_button("Adicionar entidade", type="primary"):
                     if new_ent_name.strip():
                         try:
                             _catalog.create_entity(new_ent_name.strip(), new_ent_type)
@@ -618,7 +617,7 @@ with tab_config:
                 ent_del_label = st.selectbox(
                     "Selecione a entidade", list(ent_del_opts.keys()), key="del_ent_sel"
                 )
-                if st.button("🗑️ Remover entidade", key="btn_del_ent"):
+                if st.button("Remover entidade", key="btn_del_ent"):
                     try:
                         _catalog.delete_entity(ent_del_opts[ent_del_label])
                         st.success(f"Entidade **{ent_del_label}** removida.")
@@ -670,7 +669,7 @@ with tab_config:
                 )
                 # Mapa reverso para valor interno
                 _type_rev = {v: k for k, v in _COMPANY_TYPES.items()}
-                if st.form_submit_button("➕ Adicionar empresa", type="primary"):
+                if st.form_submit_button("Adicionar empresa", type="primary"):
                     if new_emp_name.strip() and new_emp_cnpj.strip():
                         try:
                             _catalog.create_company(
@@ -695,7 +694,7 @@ with tab_config:
                 emp_del_label = st.selectbox(
                     "Selecione a empresa", list(emp_del_opts.keys()), key="del_emp_sel"
                 )
-                if st.button("🗑️ Remover empresa", key="btn_del_emp"):
+                if st.button("Remover empresa", key="btn_del_emp"):
                     try:
                         _catalog.delete_company(emp_del_opts[emp_del_label])
                         st.success(f"Empresa **{emp_del_label}** removida.")

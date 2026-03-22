@@ -28,7 +28,7 @@ with st.expander("\u2139\ufe0f Como preparar seu arquivo para importação", exp
     _sample_path = Path(__file__).resolve().parents[2] / "data" / "samples" / "sample_valid.csv"
     if _sample_path.exists():
         st.download_button(
-            label="⬇️ Baixar modelo (sample_valid.csv)",
+            label="Baixar modelo (sample_valid.csv)",
             data=_sample_path.read_bytes(),
             file_name="modelo_importacao.csv",
             mime="text/csv",
@@ -110,7 +110,7 @@ if st.button("Importar", type="primary"):
     else:
         n_inserted = result['records_inserted']
         n_skipped  = result['records_skipped']
-        st.toast(f"✅ {n_inserted} registro(s) importado(s) com sucesso!", icon="✅")
+        st.toast(f"{n_inserted} registro(s) importado(s) com sucesso!")
         st.success(
             f"Concluído: {n_inserted} registro(s) inserido(s), "
             f"{n_skipped} ignorado(s) (já existiam)."

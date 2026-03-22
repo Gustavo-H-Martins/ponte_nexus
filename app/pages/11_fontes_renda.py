@@ -77,7 +77,7 @@ with tab_analysis:
         st.info(
             "📭 Nenhuma transação encontrada. Importe ou registre dados para visualizar a análise."
         )
-        if st.button("📂 Importar extrato", type="primary"):
+        if st.button("Importar extrato", type="primary"):
             st.switch_page("pages/05_importacao_dados.py")
     else:
         # Filtra apenas transações de receita / remuneração
@@ -289,10 +289,10 @@ with tab_manage:
             with col_entity:
                 st.caption(entity_map.get(src["entity_id"], "—"))
             with col_action:
-                if st.button("🗑️", key=f"del_src_{src['id']}", help="Desativar esta fonte"):
+                if st.button("×", key=f"del_src_{src['id']}", help="Desativar esta fonte"):
                     try:
                         _catalog.deactivate_income_source(src["id"])
-                        st.toast(f"'{src['name']}' desativada.", icon="🗑️")
+                        st.toast(f"'{src['name']}' desativada.")
                         _reload()
                         st.rerun()
                     except Exception as exc:

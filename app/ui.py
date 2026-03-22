@@ -325,7 +325,7 @@ def require_write_access() -> None:
     """Bloqueia a página para usuários reader, exibindo mensagem e interrompendo execução."""
     if is_reader():
         st.warning(
-            "🔒 **Acesso somente leitura** — sua conta não tem permissão para "
+            "**Acesso somente leitura** — sua conta não tem permissão para "
             "criar ou modificar dados. Entre em contato com um administrador."
         )
         st.stop()
