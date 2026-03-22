@@ -26,10 +26,10 @@ if df_flow.empty:
     )
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button("✏️ Registrar transação", type="primary"):
+        if st.button("Registrar transação", type="primary"):
             st.switch_page("pages/07_novo_lancamento.py")
     with col_b:
-        if st.button("📂 Importar extrato"):
+        if st.button("Importar extrato"):
             st.switch_page("pages/05_importacao_dados.py")
     st.stop()
 

@@ -68,7 +68,7 @@ else:
         st.divider()
 
         for conta in exibir:
-            status  = "✅ Ativa" if conta["is_active"] else "🔒 Inativa"
+            status  = "Ativa" if conta["is_active"] else "Inativa"
             tipo    = _TIPO_LABEL.get(conta["account_type"], conta["account_type"])
             balance = conta["balance"]
             balance_str = _fmt_balance(balance, conta["currency"])
@@ -94,13 +94,13 @@ else:
                 if conta["is_active"] and not is_reader():
                     if st.button("Desativar conta", key=f"deactivate_{conta['id']}", type="secondary"):
                         _catalog.deactivate_account(conta["id"])
-                        st.toast(f"Conta '{conta['account_name']}' desativada.", icon="🔒")
+                        st.toast(f"Conta '{conta['account_name']}' desativada.")
                         st.rerun()
 
 st.divider()
 
 # ── Histórico de Saldo por Conta ────────────────────────────────────────────
-st.subheader("📊 Histórico de Saldo")
+st.subheader("Histórico de Saldo")
 
 _df_hist = _get_balance_history(st.session_state.get("effective_owner_id"))
 

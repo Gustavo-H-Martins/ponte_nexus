@@ -62,20 +62,20 @@ df_all = _get_data(st.session_state.get("effective_owner_id"))
 
 if df_all.empty:
     st.info(
-        "💭 Nenhuma transação encontrada. Importe seu extrato ou registre seus pró-labores e dividendos."
+        "Nenhuma transação encontrada. Importe seu extrato ou registre seus pró-labores e dividendos."
     )
     col_a, col_b, _ = st.columns([2, 2, 4])
     with col_a:
-        if st.button("📂 Importar extrato", type="primary"):
+        if st.button("Importar extrato", type="primary"):
             st.switch_page("pages/05_importacao_dados.py")
     with col_b:
-        if st.button("✏️ Registrar transação"):
+        if st.button("Registrar transação"):
             st.switch_page("pages/07_novo_lancamento.py")
     st.stop()
 
 # ── Tabs principais ───────────────────────────────────────────────────────────
 tab_bolso, tab_remuneracao, tab_fontes = st.tabs(
-    ["💼 Meu Bolso", "💰 Remuneração", "🌱 Fontes de Renda"]
+    ["Meu Bolso", "Remuneração", "Fontes de Renda"]
 )
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -128,14 +128,14 @@ with tab_bolso:
 
     # ── KPIs pessoais ─────────────────────────────────────────────────────────────
     c1, c2, c3 = st.columns(3)
-    c1.metric("💰 Total Recebido (PF)", f"R$ {total_recebido:,.2f}", delta=delta_recebido)
+    c1.metric("Total Recebido (PF)", f"R$ {total_recebido:,.2f}", delta=delta_recebido)
     c2.metric(
         "📉 Despesas Pessoais",
         f"R$ {total_despesa:,.2f}",
         delta=delta_despesa,
         delta_color="inverse",
     )
-    c3.metric("⚖️ Saldo Pessoal", f"R$ {saldo_pessoal:,.2f}")
+    c3.metric("Saldo Pessoal", f"R$ {saldo_pessoal:,.2f}")
 
     st.divider()
 
@@ -330,26 +330,26 @@ with tab_remuneracao:
 
     if df_rem.empty:
         st.info(
-            "💭 Nenhum pró-labore ou dividendo registrado ainda. "
+            "Nenhum pró-labore ou dividendo registrado ainda. "
             "Esses valores aparecem aqui quando você registra retiradas da empresa."
         )
         col_ra, col_rb, _ = st.columns([2, 2, 4])
         with col_ra:
-            if st.button("✏️ Registrar retirada", type="primary", key="rem_reg"):
+            if st.button("Registrar retirada", type="primary", key="rem_reg"):
                 st.switch_page("pages/07_novo_lancamento.py")
         with col_rb:
-            if st.button("📂 Importar extrato", key="rem_imp"):
+            if st.button("Importar extrato", key="rem_imp"):
                 st.switch_page("pages/05_importacao_dados.py")
     else:
         total_pro_labore = float(df_rem.loc[df_rem["transaction_type"] == "pro_labore", "amount"].sum())
         total_dividendos  = float(df_rem.loc[df_rem["transaction_type"] == "dividendos", "amount"].sum())
 
         rc1, rc2, rc3 = st.columns(3)
-        rc1.metric("💼 Pró-Labore",        f"R$ {total_pro_labore:,.2f}")
-        rc2.metric("💰 Dividendos",         f"R$ {total_dividendos:,.2f}")
+        rc1.metric("Pró-Labore",        f"R$ {total_pro_labore:,.2f}")
+        rc2.metric("Dividendos",         f"R$ {total_dividendos:,.2f}")
         rc3.metric("∑ Total Distribuído", f"R$ {total_pro_labore + total_dividendos:,.2f}")
 
-        with st.expander("ℹ️ Pró-labore vs Dividendos — qual a diferença?", expanded=False):
+        with st.expander("Pró-labore vs Dividendos — qual a diferença?", expanded=False):
             st.markdown("""
             **Pró-labore** é a remuneração mensal do sócio pelo trabalho que realiza na empresa.
             Tem incidência de INSS e IRPF. É uma despesa dedutível da empresa.
@@ -417,17 +417,17 @@ with tab_fontes:
     sources  = _get_sources(st.session_state.get("effective_owner_id"))
     _INCOME_TX_TYPES = {"receita", "pro_labore", "dividendos"}
 
-    subtab_analysis, subtab_manage = st.tabs(["📊 Análise por Fonte", "⚙️ Gerenciar Fontes"])
+    subtab_analysis, subtab_manage = st.tabs(["Análise por Fonte", "Gerenciar Fontes"])
 
     with subtab_analysis:
         if df_all.empty:
-            st.info("📭 Nenhuma transação encontrada. Importe ou registre dados para visualizar a análise.")
+            st.info("Nenhuma transação encontrada. Importe ou registre dados para visualizar a análise.")
         else:
             df_income = df_all[df_all["transaction_type"].isin(_INCOME_TX_TYPES)].copy()
 
             if df_income.empty:
                 st.info(
-                    "📭 Nenhuma receita encontrada. "
+                    "Nenhuma receita encontrada. "
                     "Registre receitas, pró-labore ou dividendos para ver a análise."
                 )
             else:
@@ -452,9 +452,9 @@ with tab_fontes:
                     total_income = float(df_period["amount"].sum())
 
                     col_k1, col_k2, col_k3 = st.columns(3)
-                    col_k1.metric("💰 Total de receitas", f"R$ {total_income:,.2f}")
-                    col_k2.metric("📅 Meses analisados", str(len(available_months_f)))
-                    col_k3.metric("📊 Média mensal", f"R$ {total_income / max(len(available_months_f), 1):,.2f}")
+                    col_k1.metric("Total de receitas", f"R$ {total_income:,.2f}")
+                    col_k2.metric("Meses analisados", str(len(available_months_f)))
+                    col_k3.metric("Média mensal", f"R$ {total_income / max(len(available_months_f), 1):,.2f}")
 
                     st.divider()
 
@@ -515,8 +515,8 @@ with tab_fontes:
 
     with subtab_manage:
         if not entities:
-            st.info("📭 Nenhuma entidade cadastrada. Complete o perfil inicial para continuar.")
-            if st.button("🚀 Configurar perfil", type="primary", key="fontes_config"):
+            st.info("Nenhuma entidade cadastrada. Complete o perfil inicial para continuar.")
+            if st.button("Configurar perfil", type="primary", key="fontes_config"):
                 st.switch_page("pages/01_dashboard_geral.py")
         else:
             st.markdown('<span class="nx-section-label">Adicionar fonte de renda</span>', unsafe_allow_html=True)
@@ -533,7 +533,7 @@ with tab_fontes:
                         "Valor mensal esperado (R$) — opcional",
                         min_value=0.0, step=100.0, format="%.2f",
                     )
-                adicionar = st.form_submit_button("➕ Adicionar fonte", type="primary")
+                adicionar = st.form_submit_button("Adicionar fonte", type="primary")
 
                 if adicionar and source_name.strip():
                     source_type_value = next(
@@ -548,7 +548,7 @@ with tab_fontes:
                                 source_type=source_type_value,
                                 expected_monthly_amount=Decimal(str(expected)) if expected > 0 else None,
                             )
-                            st.toast(f"Fonte '{source_name.strip()}' adicionada!", icon="🌱")
+                            st.toast(f"Fonte '{source_name.strip()}' adicionada!")
                             _reload_fontes()
                             st.rerun()
                         except Exception as exc:
@@ -563,6 +563,6 @@ with tab_fontes:
                         label = _SOURCE_LABELS.get(s["source_type"], s["source_type"])
                         st.markdown(f"**{s['name']}** — {label}")
                     with col_status:
-                        status = "✅ Ativa" if s["is_active"] else "⏸ Inativa"
+                        status = "Ativa" if s["is_active"] else "Inativa"
                         st.caption(status)
 

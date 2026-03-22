@@ -18,7 +18,7 @@ init_db()
 
 # ── Guard de autenticação ─────────────────────────────────────────────────────
 if "user_id" not in st.session_state:
-    st.navigation([st.Page("pages/00_login.py", title="Entrar", icon="🔑")]).run()
+    st.navigation([st.Page("pages/00_login.py", title="Entrar", icon=":material/login:")]).run()
     st.stop()
 
 # ── Logo fixo acima do menu de navegação (st.logo prega no topo da sidebar) ──
@@ -45,7 +45,7 @@ st.markdown(
 
 # ── Sidebar: info do usuário + logout ─────────────────────────────────────────
 with st.sidebar:
-    st.caption(f"👤 **{st.session_state.get('username', '')}**")
+    st.caption(f"**{st.session_state.get('username', '')}**")
     st.caption(st.session_state.get("user_email", ""))
     if st.button("Sair", use_container_width=True):
         for key in ["user_id", "user_email", "username", "user_role", "user_plan", "effective_owner_id"]:
@@ -72,34 +72,37 @@ with st.sidebar:
 
 # ── Navegação ─────────────────────────────────────────────────────────────────
 _nav: dict = {
+    "Início": [
+        st.Page("pages/00_home.py",        title="Início",    icon=":material/home:"),
+    ],
     "Pessoal": [
-        st.Page("pages/08_painel_pessoal.py", title="Meu Bolso", icon="👤"),
-        st.Page("pages/10_orcamento.py",      title="Orçamento",  icon="🎯"),
+        st.Page("pages/08_painel_pessoal.py", title="Meu Bolso", icon=":material/person:"),
+        st.Page("pages/10_orcamento.py",      title="Orçamento",  icon=":material/pie_chart:"),
     ],
     "Empresa": [
-        st.Page("pages/01_dashboard_geral.py", title="Visão Geral",  icon="📊"),
-        st.Page("pages/13_contas.py",          title="Contas",        icon="🏦"),
-        st.Page("pages/14_entidades.py",       title="Entidades",     icon="🏢"),
+        st.Page("pages/01_dashboard_geral.py", title="Visão Geral",  icon=":material/bar_chart:"),
+        st.Page("pages/13_contas.py",          title="Contas",        icon=":material/account_balance:"),
+        st.Page("pages/14_entidades.py",       title="Entidades",     icon=":material/business:"),
     ],
     "Transações": [
-        st.Page("pages/06_lancamentos.py",      title="Extrato",             icon="📝"),
-        st.Page("pages/07_novo_lancamento.py",  title="Registrar Transação", icon="✏️"),
-        st.Page("pages/05_importacao_dados.py", title="Importar Extrato",    icon="📂"),
+        st.Page("pages/06_lancamentos.py",      title="Extrato",             icon=":material/receipt_long:"),
+        st.Page("pages/07_novo_lancamento.py",  title="Registrar Transação", icon=":material/edit:"),
+        st.Page("pages/05_importacao_dados.py", title="Importar Extrato",    icon=":material/upload_file:"),
     ],
     "Ajuda": [
-        st.Page("pages/09_ajuda.py",  title="Como Usar",          icon="❓"),
-        st.Page("pages/12_planos.py", title="Planos e Assinatura", icon="⭐"),
+        st.Page("pages/09_ajuda.py",  title="Como Usar",          icon=":material/help:"),
+        st.Page("pages/12_planos.py", title="Planos e Assinatura", icon=":material/workspace_premium:"),
     ],
 }
 
 if not is_reader():
     _nav["Ajuda"].append(
-        st.Page("pages/15_compartilhamento.py", title="Compartilhamento", icon="🔗")
+        st.Page("pages/15_compartilhamento.py", title="Compartilhamento", icon=":material/share:")
     )
 
 if st.session_state.get("user_role") == "admin":
     _nav["Ajuda"].append(
-        st.Page("pages/16_admin.py", title="Painel Admin", icon="🛡️")
+        st.Page("pages/16_admin.py", title="Painel Admin", icon=":material/admin_panel_settings:")
     )
 
 st.navigation(_nav).run()

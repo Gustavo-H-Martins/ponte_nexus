@@ -11,7 +11,7 @@ page_header("Entidades", "Gerencie pessoas físicas (PF) e jurídicas (PJ) cadas
 _catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
 
 # ── Abas por tipo de entidade ─────────────────────────────────────────────────
-aba_pj, aba_pf = st.tabs(["🏢 Pessoas Jurídicas (PJ)", "👤 Pessoas Físicas (PF)"])
+aba_pj, aba_pf = st.tabs(["Pessoas Jurídicas (PJ)", "Pessoas Físicas (PF)"])
 
 with aba_pj:
     entidades_pj = _catalog.list_entities(entity_type=EntityType.PJ.value)
@@ -38,7 +38,7 @@ with aba_pj:
                 elif not is_reader():
                     if col2.button("Excluir", key=f"del_pj_{ent.id}", type="secondary"):
                         _catalog.delete_entity(ent.id)
-                        st.toast(f"Entidade '{ent.name}' removida.", icon="🗑️")
+                        st.toast(f"Entidade '{ent.name}' removida.")
                         st.rerun()
 
 with aba_pf:
@@ -66,7 +66,7 @@ with aba_pf:
                 elif not is_reader():
                     if col2.button("Excluir", key=f"del_pf_{ent.id}", type="secondary"):
                         _catalog.delete_entity(ent.id)
-                        st.toast(f"Entidade '{ent.name}' removida.", icon="🗑️")
+                        st.toast(f"Entidade '{ent.name}' removida.")
                         st.rerun()
 
 st.divider()
@@ -94,7 +94,7 @@ with st.form("nova_entidade", clear_on_submit=True):
             entity_type = EntityType.PJ.value if "PJ" in tipo else EntityType.PF.value
             try:
                 _catalog.create_entity(nome.strip(), entity_type)
-                st.toast(f"Entidade '{nome.strip()}' ({entity_type}) cadastrada!", icon="✅")
+                st.toast(f"Entidade '{nome.strip()}' ({entity_type}) cadastrada!")
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
