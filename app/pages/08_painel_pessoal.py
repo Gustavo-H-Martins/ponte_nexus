@@ -10,7 +10,7 @@ from src.services.catalog_service import CatalogService
 from app.ui import FAVICON_IMG,  page_header, plotly_layout, TYPE_COLORS, TIPO_LABEL
 
 st.set_page_config(
-    page_title="Painel Pessoal · Inside Money", layout="wide", page_icon=FAVICON_IMG or "👤"
+    page_title="Painel Pessoal · Inside Cash", layout="wide", page_icon=FAVICON_IMG or "👤"
 )
 
 _PF_INCOME_TYPES = {"pro_labore", "dividendos"}
@@ -197,11 +197,9 @@ with tab_bolso:
                 labels={"amount": "R$", "category": "Categoria"},
             )
             fig_top.update_traces(textposition="outside")
-            fig_top.update_layout(
-                **LAYOUT,
-                showlegend=False,
-                yaxis={"categoryorder": "total ascending"},
-            )
+            _top_layout = {**LAYOUT, "showlegend": False}
+            _top_layout["yaxis"] = {**_top_layout.get("yaxis", {}), "categoryorder": "total ascending"}
+            fig_top.update_layout(**_top_layout)
             st.plotly_chart(fig_top, use_container_width=True)
 
     with col_right:

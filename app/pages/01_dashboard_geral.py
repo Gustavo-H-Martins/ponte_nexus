@@ -10,7 +10,7 @@ from app.ui import FAVICON_IMG,  page_header, plotly_layout, TYPE_COLORS, TIPO_L
 from app.export import generate_dashboard_pdf
 from src.services.catalog_service import CatalogService
 
-st.set_page_config(page_title="Visão Geral · Inside Money", layout="wide", page_icon=FAVICON_IMG or "📊")
+st.set_page_config(page_title="Visão Geral · Inside Cash", layout="wide", page_icon=FAVICON_IMG or "📊")
 def _render_onboarding() -> None:
     """Exibe wizard de configuração inicial de 4 etapas quando o banco está vazio."""
     catalog = CatalogService(owner_id=st.session_state.get("effective_owner_id"))
@@ -30,7 +30,7 @@ def _render_onboarding() -> None:
 
     st.markdown(f"""
         <span style='vertical-align:middle;'>{feather_icon('user', 28, '#64FFDA', 'Bem-vindo')}</span>
-        <span style='font-size:1.6rem;font-weight:700;margin-left:0.5rem;'>Bem-vindo ao Inside Money!</span>
+        <span style='font-size:1.6rem;font-weight:700;margin-left:0.5rem;'>Bem-vindo ao Inside Cash!</span>
     """, unsafe_allow_html=True)
     st.markdown(
         "Configure seu perfil em poucos passos para começar a entender suas finanças."

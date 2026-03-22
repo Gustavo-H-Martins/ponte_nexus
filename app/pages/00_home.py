@@ -11,7 +11,7 @@ from app.ui import FAVICON_IMG, page_header
 from src.analytics.kpis import pf_pj_kpis, income_expense_summary
 from src.analytics.loader import load_transactions_df
 
-st.set_page_config(page_title="Início · Inside Money", layout="wide", page_icon=FAVICON_IMG)
+st.set_page_config(page_title="Início · Inside Cash", layout="wide", page_icon=FAVICON_IMG)
 
 
 @st.cache_data(ttl=30)
@@ -81,3 +81,26 @@ with col_c:
 with col_d:
     if st.button("Visão Geral", use_container_width=True):
         st.switch_page("pages/01_dashboard_geral.py")
+
+st.divider()
+
+# ── Descrição da aplicação ─────────────────────────────────────────────────────────────────────────────────
+st.markdown(
+    """
+    O **Inside Cash** centraliza o fluxo financeiro entre Pessoa Física e Pessoa Jurídica.  
+    Importe extratos, registre lançamentos manualmente e acompanhe pró-labore, dividendos
+    e transferências em um único painel — sem planilhas.
+    """
+)
+
+st.divider()
+
+# ── Ajuda ───────────────────────────────────────────────────────────────────────────────────────
+st.markdown('<span class="nx-section-label">Precisa de ajuda?</span>', unsafe_allow_html=True)
+col_help, _ = st.columns([1, 3])
+with col_help:
+    if st.button("Como Usar — Guia Completo", use_container_width=True):
+        st.switch_page("pages/09_ajuda.py")
+
+from app.ui import render_footer as _render_footer  # noqa: E402
+_render_footer(st.session_state.get("dark_mode", True))

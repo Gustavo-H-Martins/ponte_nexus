@@ -6,7 +6,7 @@ from app.ui import FAVICON_IMG,  page_header, plotly_layout, TYPE_COLORS, TIPO_L
 
 _TIPOS = {"aporte_pf_pj", "emprestimo_pf_pj"}
 
-st.set_page_config(page_title="Aportes na Empresa · Inside Money", layout="wide", page_icon=FAVICON_IMG or "📈")
+st.set_page_config(page_title="Aportes na Empresa · Inside Cash", layout="wide", page_icon=FAVICON_IMG or "📈")
 
 
 @st.cache_data(ttl=30)

@@ -11,7 +11,7 @@ from src.services.auth_service import AuthService
 from app.ui import FAVICON_IMG, LOGO_PATH, render_footer
 
 st.set_page_config(
-    page_title="Inside Money · Entrar",
+    page_title="Inside Cash · Entrar",
     layout="centered",
     page_icon=FAVICON_IMG or "💰",
 )
@@ -19,7 +19,7 @@ st.set_page_config(
 _auth = AuthService()
 
 # Logo fixo no topo da sidebar via st.logo
-st.logo(str(LOGO_PATH / "logo_imoney_light.png"), size="large")
+st.logo(str(LOGO_PATH / "logo_imoney_light.png"), icon_image=FAVICON_IMG, size="large")
 st.markdown(
     """
     <style>
@@ -36,16 +36,16 @@ st.markdown(
 # Logo central na área de conteúdo da página de login
 _logo_file = LOGO_PATH / "logo_imoney_light.png"
 if _logo_file.exists():
-    st.image(str(_logo_file), width=200)
+    st.image(str(_logo_file), width=240)
 else:
-    st.title("💰 Inside Money")
+    st.title("💰 Inside Cash")
 st.caption("Dashboard financeiro PF · PJ")
 
 render_footer(is_dark=False)
 
 st.divider()
 
-aba_login, aba_cadastro = st.tabs(["Entrar", "Criar conta"])
+aba_login, aba_cadastro, aba_reset = st.tabs(["Entrar", "Criar conta", "Redefinir senha"])
 
 with aba_login:
     with st.form("form_login"):
@@ -90,5 +90,33 @@ with aba_cadastro:
                 st.session_state["user_role"]  = user.role
                 st.session_state["user_plan"]  = user.plan
                 st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
+
+with aba_reset:
+    st.caption("Use esta opção se não consegue entrar com sua senha atual.")
+    with st.form("form_reset"):
+        email_r  = st.text_input("E-mail da conta", key="reset_email")
+        senha_r1 = st.text_input("Nova senha (mín. 8 caracteres)", type="password", key="reset_senha1")
+        senha_r2 = st.text_input("Confirmar nova senha", type="password", key="reset_senha2")
+        submitted_r = st.form_submit_button("Redefinir senha", type="primary", use_container_width=True)
+
+    if submitted_r:
+        if not email_r or not senha_r1 or not senha_r2:
+            st.error("Preencha todos os campos.")
+        elif senha_r1 != senha_r2:
+            st.error("As senhas não coincidem.")
+        else:
+            try:
+                user = _auth.update_password(email=email_r, new_password=senha_r1)
+                if user is None:
+                    st.error("E-mail não encontrado ou conta inativa.")
+                else:
+                    st.session_state["user_id"]   = user.id
+                    st.session_state["user_email"] = user.email
+                    st.session_state["username"]   = user.username
+                    st.session_state["user_role"]  = user.role
+                    st.session_state["user_plan"]  = user.plan
+                    st.rerun()
             except ValueError as exc:
                 st.error(str(exc))

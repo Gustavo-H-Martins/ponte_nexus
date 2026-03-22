@@ -32,7 +32,7 @@ def generate_dashboard_pdf(
     pdf.set_font("Helvetica", "B", 15)
     pdf.set_text_color(100, 255, 218)      # #64FFDA
     pdf.set_xy(12, 8)
-    pdf.cell(0, 8, "Inside Money  |  Relatório Financeiro")
+    pdf.cell(0, 8, "Inside Cash  |  Relatório Financeiro")
 
     pdf.set_font("Helvetica", "", 8)
     pdf.set_text_color(140, 146, 176)      # #8892B0
@@ -94,7 +94,7 @@ def generate_dashboard_pdf(
     pdf.set_y(-12)
     pdf.set_font("Helvetica", "I", 7)
     pdf.set_text_color(140, 146, 176)
-    pdf.cell(0, 5, "Inside Money — gerado automaticamente", align="C")
+    pdf.cell(0, 5, "Inside Cash — gerado automaticamente", align="C")
 
     return bytes(pdf.output())
 

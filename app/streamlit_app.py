@@ -24,18 +24,19 @@ if "user_id" not in st.session_state:
 # ── Logo fixo acima do menu de navegação (st.logo prega no topo da sidebar) ──
 _is_dark_now = st.session_state.get("dark_mode", True)
 _logo_light = str(LOGO_PATH / "logo_imoney_light.png")
-_logo_dark  = str(LOGO_PATH / "logo_imoney_pill.png")
+_logo_dark  = str(LOGO_PATH / "logo_money_dark.png")
 st.logo(
     image=_logo_dark if _is_dark_now else _logo_light,
     size="large",
+    icon_image=FAVICON_IMG,
 )
 # Sobrepõe o tamanho máximo imposto pelo Streamlit ao st.logo()
 st.markdown(
     """
     <style>
-    [data-testid="stLogoImage"] {
-        width: 180px !important;
-        max-width: 180px !important;
+    [data-testid="stSidebarLogo"] {
+        width: 240px !important;
+        max-width: 240px !important;
         height: auto !important;
     }
     </style>

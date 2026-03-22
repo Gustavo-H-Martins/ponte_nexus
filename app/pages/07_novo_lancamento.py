@@ -14,7 +14,7 @@ from src.services.manual_entry_service import ManualEntryService
 from src.validation.schemas import ManualTransactionInput
 
 st.set_page_config(
-    page_title="Registrar Transação · Inside Money", layout="wide", page_icon=FAVICON_IMG or "✏️",
+    page_title="Registrar Transação · Inside Cash", layout="wide", page_icon=FAVICON_IMG or "✏️",
     initial_sidebar_state="collapsed",
 )
 
@@ -404,7 +404,6 @@ with tab_form:
     color:#8892B0;
     font-size:0.875rem;
 ">
-    <div style="font-size:2rem;margin-bottom:0.5rem">📋</div>
     Preencha os campos do formulário<br>para ver a pré-visualização aqui.
 </div>
 """,

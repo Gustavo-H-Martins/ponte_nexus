@@ -26,7 +26,15 @@ def _hash_senha(password: str) -> str:
 
 
 def _verificar_senha(password: str, password_hash: str) -> bool:
-    decoded = base64.b64decode(password_hash.encode())
+    try:
+        # Adiciona padding faltante — hashes antigos podem não ter o '=' correto
+        padded = password_hash + "=" * (-len(password_hash) % 4)
+        decoded = base64.b64decode(padded.encode())
+    except Exception:
+        # Hash em formato incompatível (legado): falha silenciosa, sem crash
+        return False
+    if len(decoded) < 33:
+        return False
     salt, stored_key = decoded[:32], decoded[32:]
     key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, _PBKDF2_ITERATIONS)
     return hmac.compare_digest(key, stored_key)
@@ -83,6 +91,19 @@ class AuthService:
                 return None
             if not _verificar_senha(password, user.password_hash):
                 return None
+            return _detach_user(user)
+
+    def update_password(self, email: str, new_password: str) -> UserModel | None:
+        """Redefine a senha de um usuário existente. Retorna None se não encontrado ou inativo."""
+        if len(new_password) < 8:
+            raise ValueError("A senha deve ter pelo menos 8 caracteres.")
+        with self.session_factory() as session:
+            repo = UserRepository(session)
+            user = repo.get_by_email(email)
+            if user is None or not user.is_active:
+                return None
+            user.password_hash = _hash_senha(new_password)
+            session.commit()
             return _detach_user(user)
 
     def get_user_by_id(self, user_id: int) -> UserModel | None:

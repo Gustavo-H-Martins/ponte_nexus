@@ -1,4 +1,4 @@
-﻿"""Utilitários de UI — estilos e helpers reutilizáveis para o Inside Money."""
+﻿"""Utilitários de UI — estilos e helpers reutilizáveis para o Inside Cash."""
 import base64
 import streamlit as st
 from pathlib import Path
@@ -264,7 +264,10 @@ def render_footer(is_dark: bool) -> None:
         .main .block-container {{ padding-bottom: 3rem; }}
         </style>
         <div class="nx-footer">
-            By&nbsp;<img src="data:image/png;base64,{logo_b64}" alt="Inside Data" />
+            <a href="https://www.grupolmtech.com.br" target="_blank" rel="noopener noreferrer"
+               style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:4px;">
+                By&nbsp;<img src="data:image/png;base64,{logo_b64}" alt="Inside Data" />
+            </a>
         </div>""",
         unsafe_allow_html=True,
     )

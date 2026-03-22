@@ -7,7 +7,7 @@ import streamlit as st
 from src.services.ingestion_service import create_ingestion_service
 from app.ui import FAVICON_IMG,  page_header, require_write_access
 
-st.set_page_config(page_title="Importar Extrato · Inside Money", layout="wide", page_icon=FAVICON_IMG or "📂", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Importar Extrato · Inside Cash", layout="wide", page_icon=FAVICON_IMG or "📂", initial_sidebar_state="collapsed")
 
 page_header("Importar Extrato", "Importe o extrato do seu banco ou planilha")
 require_write_access()
