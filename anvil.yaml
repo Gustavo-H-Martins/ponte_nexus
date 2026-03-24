@@ -1,10 +1,17 @@
+metadata: {logo_img: 'https://github.com/Gustavo-H-Martins/ponte_nexus/blob/main/app/icons/logo/favicon.png', title: Inside Cash}
 native_deps:
   head_html: |2
 
     <style>
       .anvil-panel-section-container { padding: 0 15px; }
     </style>
+package_name: Inside_Cash
 runtime_options:
   client_version: '2'
   server_spec: {}
+  server_version: python3-sandbox
   version: 2
+services:
+- client_config: {}
+  server_config: {}
+  source: /runtime/services/tables.yml
