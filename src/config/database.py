@@ -17,8 +17,9 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 def init_db() -> None:
     """Inicializa o banco de dados.
 
-    Em desenvolvimento: cria as tabelas via create_all se ainda não existirem.
-    Em produção: as tabelas devem ser criadas via `alembic upgrade head`.
+    Executa `alembic upgrade head` para garantir que o schema esteja atualizado
+    em qualquer ambiente. Em SQLite local, cria o diretório se necessário.
+    `alembic upgrade head` é idempotente: não faz nada quando já está no head.
     """
     if settings.database_url.startswith("sqlite:///"):
         db_path = Path(settings.database_url.removeprefix("sqlite:///"))
@@ -26,7 +27,8 @@ def init_db() -> None:
 
     import src.models.db_models  # noqa: F401 — registra modelos no Base
 
-    if settings.environment == "development":
-        # Cria tabelas ausentes sem apagar dados existentes.
-        # Em produção, use: alembic upgrade head
-        Base.metadata.create_all(bind=engine)
+    from alembic import command
+    from alembic.config import Config
+
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
