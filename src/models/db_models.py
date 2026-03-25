@@ -43,10 +43,15 @@ class CategoryModel(Base):
 
 class TransactionModel(Base):
     __tablename__ = "lancamentos"
+    # Unicidade scoped por proprietário: dois users distintos podem ter o mesmo
+    # external_transaction_id sem conflito.
+    __table_args__ = (
+        UniqueConstraint("owner_id", "external_transaction_id", name="uq_tx_owner_external_id"),
+    )
 
     id:                      Mapped[int]      = mapped_column(primary_key=True)
     owner_id:                Mapped[int|None] = mapped_column(ForeignKey(FK_USERS_ID), nullable=True, index=True)
-    external_transaction_id: Mapped[str]      = mapped_column(String(128), nullable=False, unique=True)
+    external_transaction_id: Mapped[str]      = mapped_column(String(128), nullable=False)
     transaction_date: Mapped[Date] = mapped_column(Date, nullable=False)
     transaction_type: Mapped[str] = mapped_column(String(64), nullable=False)
     description: Mapped[str] = mapped_column(Text, default="")

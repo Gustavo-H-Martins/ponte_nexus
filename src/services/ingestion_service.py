@@ -63,13 +63,18 @@ class IngestionService:
 
         inserted = 0
         skipped = 0
+        # Deduplicação intra-lote: CSV pode conter linhas com id_lancamento repetido.
+        # Com autoflush=False, exists_by_external_id não enxerga objetos pendentes
+        # na sessão, então precisamos rastrear os IDs processados em memória.
+        seen_ids: set[str] = set()
 
         for row in df.to_dict(orient="records"):
             external_id = str(row["id_lancamento"])
 
-            if tx_repo.exists_by_external_id(external_id):
+            if external_id in seen_ids or tx_repo.exists_by_external_id(external_id):
                 skipped += 1
                 continue
+            seen_ids.add(external_id)
 
             tx_type    = str(row["tipo_transacao"])
             entity_type = str(row["tipo_entidade"])
